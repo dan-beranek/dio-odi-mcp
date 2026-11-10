@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp.danielberanek.cz/schemas/mcp-contract-v0.1.0.json",
+  "title": "DIO/ODI MCP contract",
+  "description": "Machine-readable manifest of the public read-only DIO/ODI MCP tools, resources, and prompt. The schemas mirror the v0.1.0 server contract.",
+  "version": "0.1.0",
+  "protocol": {
+    "name": "Model Context Protocol",
+    "version": "2026-07-28",
+    "transport": "Streamable HTTP",
+    "endpoint": "/mcp",
+    "stateless": true,
+    "legacyTransport": "rejected",
+    "readOnly": true,
+    "authentication": "none; only public reference content is exposed"
+  },
+  "$defs": {
+    "actionClass": {
+      "type": "string",
+      "enum": ["READ", "STAGE_LOCAL", "REVERSIBLE_WRITE", "IRREVERSIBLE_WRITE"]
+    },
+    "mutationType": {
+      "type": "string",
+      "enum": ["MERGE", "SPLIT", "UNMERGE", "OTHER"]
+    },
+    "failureMode": {
+      "type": "string",
+      "enum": [
+        "EntitySubstitution",
+        "MergeFailure",
+        "SplitFailure",
+        "EntityOmission",
+        "SemanticFragmentation",
+        "TemporalDiscontinuity",
+        "TemporalMisalignment",
+        "ContextualDisplacement"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["RRF", "SCF", "TRF", "CAF"]
+    },
+    "shortContext": {
+      "type": "string",
+      "maxLength": 160
+    }
+  },
+  "tools": [
+    {
+      "name": "get_mutation_guardrail_profile",
+      "title": "Get mutation guardrail profile",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "actionClass": { "$ref": "#/$defs/actionClass", "default": "IRREVERSIBLE_WRITE" },
+          "mutationType": { "$ref": "#/$defs/mutationType", "default": "MERGE" },
+          "entityClass": { "$ref": "#/$defs/shortContext" },
+          "observationDomain": { "$ref": "#/$defs/shortContext" },
+          "temporalScope": { "$ref": "#/$defs/shortContext" },
+          "domainPolicyVersion": { "type": "string", "maxLength": 120 },
+          "failureModes": { "type": "array", "items": { "$ref": "#/$defs/failureMode" }, "maxItems": 8, "uniqueItems": true },
+          "include": { "type": "array", "items": { "type": "string", "enum": ["evidence_requirements", "commit_checks"] }, "maxItems": 2, "uniqueItems": true }
+        },
+        "additionalProperties": false
+      },
+      "outputDescription": "Returns reference diagnostics, explicitly illustrative constraint mappings, required domain inputs, an action-specific contract, and optional evidence/commit contract blocks. It does not evaluate evidence, instantiate policy, authorize, or return PASS/BREACH/UNKNOWN_EVIDENCE."
+    },
+    {
+      "name": "get_reconstruction_failure_profile",
+      "title": "Get Reconstruction Failure profile",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "domains": { "type": "array", "items": { "$ref": "#/$defs/domain" }, "maxItems": 4, "uniqueItems": true },
+          "failureModes": { "type": "array", "items": { "$ref": "#/$defs/failureMode" }, "maxItems": 8, "uniqueItems": true },
+          "include": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["definitions", "diagnostic_boundaries", "constraint_mappings", "source_provenance"] },
+            "maxItems": 4,
+            "uniqueItems": true,
+            "default": ["definitions", "diagnostic_boundaries", "constraint_mappings", "source_provenance"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_evidence_promotion_contract",
+      "title": "Get evidence promotion contract",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+    },
+    {
+      "name": "get_commit_boundary_contract",
+      "title": "Get commit-boundary contract",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "phase": { "type": "string", "enum": ["PHASE_1", "PHASE_2"] },
+          "actionClass": { "$ref": "#/$defs/actionClass" }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_concepts",
+      "title": "Search DIO/ODI concepts",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "minLength": 1, "maxLength": 180 },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 30, "default": 10 }
+        },
+        "required": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_concept",
+      "title": "Get canonical concept",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": { "identifier": { "type": "string", "minLength": 1, "maxLength": 240 } },
+        "required": ["identifier"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_relations",
+      "title": "Get concept relations",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": { "identifier": { "type": "string", "minLength": 1, "maxLength": 240 } },
+        "required": ["identifier"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_application_mapping",
+      "title": "Get DIO/ODI application mapping",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mapping": { "type": "string", "enum": ["agentic-er", "policy-as-code"], "default": "agentic-er" },
+          "section": { "type": "string", "enum": ["all", "overview", "diagnostic-to-constraint", "evidence", "authorization", "boundary"], "default": "all" }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_policy_as_code_mapping",
+      "title": "Get Policy-as-Code mapping",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+    },
+    {
+      "name": "get_reference_status",
+      "title": "Get Reference Model status",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+    }
+  ],
+  "resources": [
+    "dio-odi://reference/status",
+    "dio-odi://reference/vocabulary",
+    "dio-odi://diagnostics/reconstruction-failure-taxonomy",
+    "dio-odi://contracts/evidence-promotion",
+    "dio-odi://contracts/commit-boundary",
+    "dio-odi://mappings/agentic-er",
+    "dio-odi://mappings/policy-as-code"
+  ],
+  "prompts": [
+    {
+      "name": "plan_mutation_guardrail_integration",
+      "readOnly": true,
+      "arguments": {
+        "actionClass": { "$ref": "#/$defs/actionClass", "default": "IRREVERSIBLE_WRITE" },
+        "mutationType": { "$ref": "#/$defs/mutationType", "default": "MERGE" },
+        "entityClass": { "$ref": "#/$defs/shortContext" },
+        "observationDomain": { "$ref": "#/$defs/shortContext" },
+        "temporalScope": { "$ref": "#/$defs/shortContext" },
+        "domainPolicyVersion": { "type": "string", "maxLength": 120 }
+      }
+    }
+  ]
+}

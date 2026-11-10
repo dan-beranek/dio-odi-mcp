@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dio-odi": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://mcp.danielberanek.cz/mcp"]
+    }
+  }
+}
