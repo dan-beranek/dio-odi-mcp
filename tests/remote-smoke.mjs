@@ -16,7 +16,7 @@ function resolveUrls(raw) {
   if (base.protocol !== "https:" && base.hostname !== "localhost" && base.hostname !== "127.0.0.1") {
     throw new Error("MCP_BASE_URL must use HTTPS (HTTP is allowed only for localhost).");
   }
-  const trimmedPath = base.pathname.replace(/\\/+$/, "");
+  const trimmedPath = base.pathname.replace(/\/+$/, "");
   const rootPath = trimmedPath.endsWith("/mcp") ? trimmedPath.slice(0, -4) : trimmedPath;
   const mcpPath = trimmedPath.endsWith("/mcp") ? trimmedPath : `${trimmedPath}/mcp`;
   return {
