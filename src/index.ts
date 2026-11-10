@@ -1,4 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/server";
+import { limitRequestBody } from "./body-limit.mjs";
 import { createMcpHandler } from "agents/mcp/server";
 import { z } from "zod";
 import {
@@ -307,13 +308,22 @@ export default {
     const contentLength = Number(request.headers.get("Content-Length") ?? "0");
     if (Number.isFinite(contentLength) && contentLength > 65536) return jsonResponse({ error: "request_too_large", maxBytes: 65536 }, 413, headers);
 
+    let boundedRequest: Request;
+    try {
+      const limited = await limitRequestBody(request, 65536);
+      if (!limited) return jsonResponse({ error: "request_too_large", maxBytes: 65536 }, 413, headers);
+      boundedRequest = limited;
+    } catch {
+      return jsonResponse({ error: "invalid_request_body" }, 400, headers);
+    }
+
     if (env.MCP_RATE_LIMITER) {
       const ip = request.headers.get("CF-Connecting-IP") ?? "anonymous";
       const { success } = await env.MCP_RATE_LIMITER.limit({ key: `mcp-public:${ip}` });
       if (!success) return jsonResponse({ error: "rate_limited", retryable: true }, 429, headers);
     }
 
-    const response = await handler(request, env, ctx);
+    const response = await handler(boundedRequest, env, ctx);
     const mergedHeaders = new Headers(response.headers);
     for (const [key, value] of headers.entries()) mergedHeaders.set(key, value);
     return new Response(response.body, { status: response.status, statusText: response.statusText, headers: mergedHeaders });
