@@ -1,0 +1,32 @@
+name: Production MCP Smoke Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run unit and contract tests
+        run: npm run check
+      - name: Run public MCP production test suite
+        run: npm run test:remote
+      - name: Upload machine-readable test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dio-odi-mcp-production-smoke-report
+          path: test-results/production-smoke.json
+          if-no-files-found: ignore
+          retention-days: 30
