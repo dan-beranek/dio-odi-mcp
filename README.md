@@ -135,6 +135,27 @@ The Worker defines an approximate Cloudflare Rate Limiting binding of 600 reques
 
 The initial free Workers plan has finite account-level request and CPU allowances. Check the current Cloudflare plan and account usage before treating the endpoint as unlimited public infrastructure.
 
+## Testing
+
+Run the local deterministic unit and contract checks:
+
+```bash
+npm ci --no-audit --no-fund
+npm run check
+```
+
+Run the public production smoke suite against the deployed service:
+
+```bash
+npm run test:remote
+```
+
+The remote suite uses Node.js built-in `fetch` and the MCP `2026-07-28` Streamable HTTP request contract. It checks the service root and health endpoint, server discovery, all ten tools, all seven resources, the integration prompt, selected semantic invariants, HTTP method handling, CORS behavior, and protocol-header validation. It writes a machine-readable report to `test-results/production-smoke.json`.
+
+To target another deployment, set `MCP_BASE_URL` to its base URL before running the command. The suite is deliberately sequential and low-volume; it is not a load test and does not deliberately exhaust the configured rate limiter. A manual GitHub Actions workflow, **Production MCP Smoke Tests**, runs both the local checks and this public-endpoint suite and uploads the JSON report.
+
+The remote suite requires Node.js 22 or later and no additional package dependencies. It is safe to run from a normal desktop connection; network latency is measured separately from local test execution time.
+
 ## Client configuration examples
 
 Modern remote MCP clients use the URL directly:
