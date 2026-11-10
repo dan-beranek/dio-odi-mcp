@@ -308,6 +308,12 @@ export default {
     const contentLength = Number(request.headers.get("Content-Length") ?? "0");
     if (Number.isFinite(contentLength) && contentLength > 65536) return jsonResponse({ error: "request_too_large", maxBytes: 65536 }, 413, headers);
 
+    if (env.MCP_RATE_LIMITER) {
+      const ip = request.headers.get("CF-Connecting-IP") ?? "anonymous";
+      const { success } = await env.MCP_RATE_LIMITER.limit({ key: `mcp-public:${ip}` });
+      if (!success) return jsonResponse({ error: "rate_limited", retryable: true }, 429, headers);
+    }
+
     let boundedRequest: Request;
     try {
       const limited = await limitRequestBody(request, 65536);
@@ -315,12 +321,6 @@ export default {
       boundedRequest = limited;
     } catch {
       return jsonResponse({ error: "invalid_request_body" }, 400, headers);
-    }
-
-    if (env.MCP_RATE_LIMITER) {
-      const ip = request.headers.get("CF-Connecting-IP") ?? "anonymous";
-      const { success } = await env.MCP_RATE_LIMITER.limit({ key: `mcp-public:${ip}` });
-      if (!success) return jsonResponse({ error: "rate_limited", retryable: true }, 429, headers);
     }
 
     const response = await handler(boundedRequest, env, ctx);
