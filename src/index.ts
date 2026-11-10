@@ -46,11 +46,15 @@ function jsonResult(value: unknown) {
 }
 
 function createServer() {
-  const server = new McpServer({
-    name: "dio-odi-mcp",
-    version: "0.1.0",
-    instructions: "Public read-only DIO/ODI reference service. For Agentic ER, start with get_mutation_guardrail_profile. Treat canonical definitions as canonical-reference and mapping examples as illustrative. This server does not instantiate domain policy, assess evidence, authorize a mutation, or return commit verdicts. The integrating application must perform evidence promotion, Supervisor checks, version validation, and atomic persistence locally."
-  });
+    const server = new McpServer(
+    {
+      name: "dio-odi-mcp",
+      version: "0.1.0"
+    },
+    {
+      instructions: "Public read-only DIO/ODI reference service. For Agentic ER, start with get_mutation_guardrail_profile. Treat canonical definitions as canonical-reference and mapping examples as illustrative. This server does not instantiate domain policy, assess evidence, authorize a mutation, or return commit verdicts. The integrating application must perform evidence promotion, Supervisor checks, version validation, and atomic persistence locally."
+    }
+  );
 
   server.registerTool(
     "get_mutation_guardrail_profile",
