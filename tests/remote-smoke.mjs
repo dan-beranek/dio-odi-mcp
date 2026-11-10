@@ -146,7 +146,7 @@ await check("service root is reachable", async () => {
 });
 
 await check("health endpoint reports expected service and versions", async () => {
-  const response = await fetch(`${urls.origin}${urls.root.endsWith("/mcp") ? "" : new URL(urls.root).pathname}/healthz`, { signal: AbortSignal.timeout(15000) });
+  const response = await fetch(urls.health, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
   const data = await response.json();
   assert.equal(data.status, "ok");
