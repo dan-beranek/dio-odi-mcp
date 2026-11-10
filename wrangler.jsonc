@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
+  "workers_dev": false,
   "observability": { "enabled": true },
   "vars": {
     "ALLOWED_ORIGINS": "https://mcp.danielberanek.cz,https://chatgpt.com,https://chat.openai.com,https://claude.ai,http://localhost:5173,http://127.0.0.1:5173"
@@ -15,8 +15,5 @@
       "namespace_id": "99111010",
       "simple": { "limit": 600, "period": 60 }
     }
-  ],
-  "routes": [
-    { "pattern": "mcp.danielberanek.cz", "custom_domain": true }
   ]
 }
