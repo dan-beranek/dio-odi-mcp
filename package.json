@@ -14,8 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test",
     "check": "npm run typecheck && npm test",
-    "test:remote": "node tests/remote-smoke.mjs",
-    "test:remote:local": "MCP_BASE_URL=http://127.0.0.1:8787 node tests/remote-smoke.mjs"
+    "test:remote": "node tests/remote-smoke.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
