@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { CONCEPTS, FAILURE_DOMAINS, RESOURCE_DOCS } from "../src/catalog.mjs";
+import { CONCEPTS, FAILURE_DOMAINS, RESOURCE_DOCS, REFERENCE_STATUS } from "../src/catalog.mjs";
 import {
   buildMutationGuardrailProfile,
   findConcept,
@@ -17,6 +17,18 @@ test("vocabulary snapshot contains 40 concepts and expected 4-domain / 8-mode ta
   assert.equal(CONCEPTS.length, 40);
   assert.equal(FAILURE_DOMAINS.length, 4);
   assert.equal(FAILURE_DOMAINS.reduce((n, d) => n + d.failureModes.length, 0), 8);
+});
+
+test("reference status keeps live SCF metadata separate from the immutable archive snapshot", () => {
+  const scf = REFERENCE_STATUS.semanticChangeFeed;
+  assert.equal(scf.liveVersion, "0.1.3");
+  assert.equal(scf.schemaVersion, "0.2.1");
+  assert.equal(scf.events, 49);
+  assert.equal(scf.coverageThrough, "2026-11-11");
+  assert.equal(scf.archiveSnapshot.feedVersion, "0.1.1");
+  assert.equal(scf.archiveSnapshot.schemaVersion, "0.2.0");
+  assert.equal(scf.archiveSnapshot.events, 45);
+  assert.equal(scf.archiveSnapshot.coverageThrough, "2026-11-09");
 });
 
 test("Identity Collapse is not a fifth branch and Semantic Vulnerability is not a failure mode", () => {
