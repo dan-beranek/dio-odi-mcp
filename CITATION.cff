@@ -7,6 +7,11 @@ authors:
     given-names: Daniel
     orcid: "https://orcid.org/0009-0004-0050-0264"
 version: 0.1.1
+doi: "10.5281/zenodo.24123229"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24123228"
+    description: "Concept DOI for the software across versions"
 license: MIT
 repository-code: "https://github.com/dan-beranek/dio-odi-mcp"
 abstract: >-

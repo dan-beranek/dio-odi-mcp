@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 — 2026-11-11
+
+- Metadata-only archival follow-up to the initial public v0.1.0 release; no functional changes to the MCP service.
+- Zenodo version DOI: https://doi.org/10.5281/zenodo.24123229
+- Zenodo Concept DOI (all versions): https://doi.org/10.5281/zenodo.24123228
+
+
 ## 0.1.0 — 2026-11-10
 
 - Initial read-only MCP MVP scaffold for Cloudflare Workers.
