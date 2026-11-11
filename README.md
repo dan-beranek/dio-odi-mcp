@@ -175,7 +175,7 @@ The bundled snapshot in `src/catalog.mjs` identifies:
 - Reference Model archive v0.9.0, DOI `10.5281/zenodo.24085589`;
 - Reference Vocabulary v0.2.2;
 - Agentic ER mapping v0.3.1 (120 local architecture concepts and 206 qualified relation assertions);
-- live SCF v0.1.2 / schema v0.2.1 / 48 events through 2026-11-10;
+- live SCF v0.1.3 / schema v0.2.1 / 49 events through 2026-11-11;
 - Policy-as-Code mapping last modified 2026-11-09.
 
 The Reference Model archive and live SCF are intentionally distinct: the live feed was maintained after the v0.9.0 archive. A later vocabulary or mapping update must change the bundled snapshot and its tests through a reviewed pull request. Do not silently overwrite archival version metadata with live values.
