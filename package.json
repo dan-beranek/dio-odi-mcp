@@ -1,6 +1,6 @@
 {
   "name": "dio-odi-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "type": "module",
   "description": "Read-only MCP server exposing the DIO/ODI Reference Model and derived Agentic ER guardrail mappings.",

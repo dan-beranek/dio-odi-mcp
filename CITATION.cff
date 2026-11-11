@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata in this file."
-title: "DIO/ODI MCP: Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Mappings"
+title: "DIO/ODI MCP: A Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Guardrail Mappings"
 type: software
 authors:
   - family-names: Beránek
     given-names: Daniel
     orcid: "https://orcid.org/0009-0004-0050-0264"
-version: 0.1.0
+version: 0.1.1
 license: MIT
 repository-code: "https://github.com/dan-beranek/dio-odi-mcp"
 abstract: >-
