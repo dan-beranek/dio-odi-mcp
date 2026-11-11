@@ -184,9 +184,16 @@ The concept index bundles 40 canonical concepts. The Agentic ER architecture ext
 
 ## Citation and archival metadata
 
-The software is versioned independently from the DIO/ODI Reference Model. `v0.1.0` was the initial public software release. `v0.1.1` republishes the same functional implementation with the complete, corrected archival metadata after enabling the Zenodo GitHub integration; it does not introduce a new MCP capability or change the read-only service behavior. The repository-level `.zenodo.json` is the authoritative Zenodo metadata projection, and `CITATION.cff` provides GitHub-native citation metadata. When both files are present, Zenodo uses `.zenodo.json` and ignores `CITATION.cff`. The canonical ordered keyword sequence is projected from the Reference Model registry's `mcp-server` work profile. No DOI is assigned in this repository before Zenodo archives the release.
+The software is versioned independently from the DIO/ODI Reference Model. `v0.1.0` was the initial public software release. `v0.1.1` republishes the same functional implementation with the complete, corrected archival metadata after enabling the Zenodo GitHub integration; it does not introduce a new MCP capability or change the read-only service behavior. The repository-level `.zenodo.json` is the authoritative Zenodo metadata projection, and `CITATION.cff` provides GitHub-native citation metadata. When both files are present, Zenodo uses `.zenodo.json` and ignores `CITATION.cff`. The canonical ordered keyword sequence is projected from the Reference Model registry's `mcp-server` work profile. Zenodo has archived v0.1.1 with the version DOI [10.5281/zenodo.24123229](https://doi.org/10.5281/zenodo.24123229); the Concept DOI for the software across versions is [10.5281/zenodo.24123228](https://doi.org/10.5281/zenodo.24123228). The version DOI identifies this exact release; use the Concept DOI when citing the software independently of a specific version.
 
 The Zenodo record uses MIT as the primary software license. This does not change the separate CC BY 4.0 license for embedded DIO/ODI content described below and in `data/ATTRIBUTION.md`.
+
+## Citation
+
+**Version 0.1.1:** [10.5281/zenodo.24123229](https://doi.org/10.5281/zenodo.24123229)  
+**Concept DOI (all versions):** [10.5281/zenodo.24123228](https://doi.org/10.5281/zenodo.24123228)
+
+Beránek, D. (2026). *DIO/ODI MCP: A Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Guardrail Mappings* (Version 0.1.1) [Software]. Zenodo. https://doi.org/10.5281/zenodo.24123229
 
 ## Licensing
 
