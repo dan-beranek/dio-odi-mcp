@@ -99,11 +99,7 @@ npm run dev
 
 The local MCP endpoint is normally `http://localhost:8787/mcp`. The handler accepts native clients with no `Origin` header and checks browser `Origin` and request `Host` values against explicit allowlists. To add another browser-based client, update both `ALLOWED_ORIGINS` in `wrangler.jsonc` and `allowedOriginHostnames` in `src/index.ts`. Test it with:
 
-```bash
-npx @modelcontextprotocol/inspector@latest
-```
-
-Connect the Inspector to the local endpoint and exercise `get_mutation_guardrail_profile`, `get_reconstruction_failure_profile`, and `get_commit_boundary_contract`.
+The MCP Inspector 2.14.0 was tested against the pinned MCP revision `2026-07-28` but could not negotiate that revision. Do not use that Inspector version as a compatibility or release gate. The official MCP TypeScript SDK compatibility check is available as `node tests/sdk-client.mjs` after installing the test client dependency; it pins the supported protocol revision and verifies tools, resources, and the integration prompt.
 
 ## Deployment
 
