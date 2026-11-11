@@ -265,7 +265,7 @@ function corsHeaders(origin: string | null, allowed: boolean): Headers {
     headers.set("Access-Control-Allow-Credentials", "false");
   }
   headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  headers.set("Access-Control-Allow-Headers", "Content-Type, Accept, Mcp-Protocol-Version");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Accept, Mcp-Protocol-Version, Mcp-Method, Mcp-Name");
   headers.set("Access-Control-Expose-Headers", "Mcp-Protocol-Version");
   headers.set("Cache-Control", "no-store");
   return headers;
