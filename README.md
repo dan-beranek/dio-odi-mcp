@@ -182,6 +182,12 @@ The Reference Model archive and live SCF are intentionally distinct: the live fe
 
 The concept index bundles 40 canonical concepts. The Agentic ER architecture extract contains the bounded sections and five constraint examples used by the primary tool; it is not a replacement for the full 120-concept / 206-assertion machine-readable mapping. The exact full mapping remains available from the source links returned by the service.
 
+## Citation and archival metadata
+
+The software is versioned independently from the DIO/ODI Reference Model. The initial software release is `v0.1.0`; the GitHub release is intended to be archived by Zenodo as its own software record. The repository-level `.zenodo.json` is the authoritative Zenodo metadata projection, and `CITATION.cff` provides GitHub-native citation metadata. The canonical ordered keyword sequence is projected from the Reference Model registry's `mcp-server` work profile. No DOI is assigned in this repository before Zenodo archives the release.
+
+The Zenodo record uses MIT as the primary software license. This does not change the separate CC BY 4.0 license for embedded DIO/ODI content described below and in `data/ATTRIBUTION.md`.
+
 ## Licensing
 
 - Source code: MIT; see `LICENSE`.
