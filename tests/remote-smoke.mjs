@@ -4,6 +4,7 @@ import { performance } from "node:perf_hooks";
 
 const DEFAULT_BASE_URL = "https://mcp.danielberanek.cz";
 const PROTOCOL_VERSION = "2026-07-28";
+const EXPECTED_SERVICE_VERSION = "0.1.1";
 const CLIENT_INFO = { name: "dio-odi-mcp-production-smoke", version: "1.0.0" };
 const CLIENT_META = {
   "io.modelcontextprotocol/protocolVersion": PROTOCOL_VERSION,
@@ -144,7 +145,11 @@ const EXPECTED_RESOURCES = [
 await check("service root is reachable", async () => {
   const response = await fetch(urls.root, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
-  assert.match(await response.text(), /DIO\/ODI MCP/);
+  const html = await response.text();
+  assert.match(html, /DIO\/ODI MCP/);
+  assert.match(html, /https:\/\/github\.com\/dan-beranek\/dio-odi-mcp/);
+  assert.match(html, /id="quick-start"/);
+  assert.match(html, /get_mutation_guardrail_profile/);
 });
 
 await check("health endpoint reports expected service and versions", async () => {
@@ -152,6 +157,7 @@ await check("health endpoint reports expected service and versions", async () =>
   assert.equal(response.status, 200);
   const data = await response.json();
   assert.equal(data.status, "ok");
+  assert.equal(data.version, EXPECTED_SERVICE_VERSION);
   assert.equal(data.service, "dio-odi-mcp");
   assert.equal(data.mode, "read-only");
   assert.equal(data.referenceModel, "0.9.0");
@@ -165,7 +171,7 @@ await check("MCP server discovery advertises protocol and identity", async () =>
   const result = resultOf(payload);
   assert.ok(result.supportedVersions.includes(PROTOCOL_VERSION));
   assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, "dio-odi-mcp");
-  assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].version, "0.1.0");
+  assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].version, EXPECTED_SERVICE_VERSION);
 });
 
 let discoveredTools = [];
