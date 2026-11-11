@@ -1,0 +1,92 @@
+{
+  "title": "DIO/ODI MCP: Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Mappings",
+  "upload_type": "software",
+  "description": "DIO/ODI MCP is a public, stateless, read-only Model Context Protocol (MCP) server that exposes a versioned snapshot of the DIO/ODI Reference Model and selected derived application mappings for Agentic Entity Resolution (Agentic ER). It is designed to let an MCP client retrieve canonical concepts, reconstruction-failure diagnostics, mutation-specific guardrail profiles, evidence-promotion and commit-boundary contracts, and Policy-as-Code integration requirements.\nThe primary integration use case is an Agentic ER application requesting a bounded diagnostic profile for an action class and mutation type, then using the returned illustrative mappings as inputs to its own domain policy and local Supervisor. The Worker does not inspect application state or execute authorization decisions.\nThe service bundles 40 canonical concepts, the four-domain/eight-mode Reconstruction Failure taxonomy, bounded Agentic ER mapping extracts, evidence-promotion and commit-boundary contracts, and a Policy-as-Code mapping. It exposes ten tools, seven read-only resources, and one integration-planning prompt over Streamable HTTP. The deployed service runs as a Cloudflare Worker and is stateless.\nThe implementation is deliberately limited to a read-only Phase 1 MCP service. It is not an MVDIO Supervisor or authorization service: it does not read application graphs or evidence stores, derive a production mutation hypothesis, execute admission/claim/graph-constraint checks, issue authorization tokens, authorize Phase 1 or Phase 2, commit or revert writes, or control the full hypothesis-conditioned evidence loop. Returned constraint bindings are illustrative and are not universal domain policies.\nThe bundled Reference Model archive is v0.9.0 (DOI 10.5281/zenodo.24085589), with Reference Vocabulary v0.2.2, Agentic ER mapping v0.3.1, and a separately identified live Semantic Change Feed snapshot. The archived Reference Model and the live feed are distinct versioned states.\nLicensing is intentionally split: the software implementation in this repository is MIT-licensed; reproduced or adapted DIO/ODI reference content and mapping data are licensed CC BY 4.0 and attributed in data/ATTRIBUTION.md. Third-party dependencies retain their own licenses. The MIT metadata license applies to the software record and does not relicense embedded CC BY 4.0 material.",
+  "access_right": "open",
+  "license": "MIT",
+  "version": "0.1.0",
+  "creators": [
+    {
+      "name": "Beránek, Daniel",
+      "orcid": "0009-0004-0050-0264"
+    }
+  ],
+  "keywords": [
+    "Digital Identity Optimization",
+    "DIO",
+    "Ontology of Digital Identity",
+    "ODI",
+    "digital identity",
+    "identity reconstruction",
+    "artificial intelligence",
+    "search engines",
+    "knowledge graphs",
+    "human observers",
+    "Model Context Protocol",
+    "read-only MCP server",
+    "Cloudflare Workers",
+    "Agentic Entity Resolution",
+    "commit-boundary authorization",
+    "Policy-as-Code integration",
+    "semantic field",
+    "distributed representational state",
+    "observation domain",
+    "observer",
+    "reconstruction mechanism",
+    "identity-preserving constraints",
+    "identity-preserving variation",
+    "referential continuity",
+    "semantic coherence",
+    "K6 Semantic Connectome",
+    "Entity",
+    "Representation",
+    "Interpretation",
+    "Trust",
+    "Relationship",
+    "Reconstruction",
+    "entity resolution",
+    "Reconstruction Failure Modes",
+    "Referential Reconstruction Failures",
+    "Entity Substitution",
+    "Merge Failure",
+    "Split Failure",
+    "Entity Omission",
+    "Semantic Coherence Failures",
+    "Semantic Fragmentation",
+    "Temporal Reconstruction Failures",
+    "Temporal Discontinuity",
+    "Temporal Misalignment",
+    "Contextual Adequacy Failures",
+    "Contextual Displacement",
+    "Identity Collapse",
+    "Semantic Vulnerability",
+    "Semantic Robustness",
+    "Reconstruction Capture",
+    "knowledge representation",
+    "semantic interoperability",
+    "provenance",
+    "stable concept URIs"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.24085589",
+      "relation": "issupplementto",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.48550/arXiv.2610.37407",
+      "relation": "isdocumentedby",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.23269323",
+      "relation": "isderivedfrom",
+      "scheme": "doi"
+    }
+  ],
+  "references": [
+    "Beránek, D. (2026). DIO/ODI Reference Model (Version 0.9.0). Zenodo. https://doi.org/10.5281/zenodo.24085589",
+    "Beránek, D. (2026). From Entity Resolution Anomalies to Reconstruction Failure Modes: A Taxonomic Note Following Minimum Viable Digital Identity Optimization (DIO). Zenodo. https://doi.org/10.5281/zenodo.23269323",
+    "Beránek, D. (2026). Constraining the Commit Boundary: A DIO/ODI-Informed Authorization Guardrail for Agentic Entity Resolution (Version 2) [Preprint]. arXiv. https://doi.org/10.48550/arXiv.2610.37407"
+  ]
+}
