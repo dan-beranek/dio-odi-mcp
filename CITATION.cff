@@ -1,0 +1,72 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata in this file."
+title: "DIO/ODI MCP: Read-only Model Context Protocol Server for the DIO/ODI Reference Model and Agentic Entity Resolution Mappings"
+type: software
+authors:
+  - family-names: Beránek
+    given-names: Daniel
+    orcid: "https://orcid.org/0009-0004-0050-0264"
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/dan-beranek/dio-odi-mcp"
+abstract: >-
+  Public, stateless, read-only Model Context Protocol server exposing a versioned
+  DIO/ODI Reference Model snapshot and bounded Agentic Entity Resolution,
+  reconstruction-failure, evidence-promotion, commit-boundary, and Policy-as-Code
+  mappings. The service provides diagnostic and integration-reference data; it
+  does not execute application authorization or mutate application state.
+keywords:
+  - "Digital Identity Optimization"
+  - "DIO"
+  - "Ontology of Digital Identity"
+  - "ODI"
+  - "digital identity"
+  - "identity reconstruction"
+  - "artificial intelligence"
+  - "search engines"
+  - "knowledge graphs"
+  - "human observers"
+  - "Model Context Protocol"
+  - "read-only MCP server"
+  - "Cloudflare Workers"
+  - "Agentic Entity Resolution"
+  - "commit-boundary authorization"
+  - "Policy-as-Code integration"
+  - "semantic field"
+  - "distributed representational state"
+  - "observation domain"
+  - "observer"
+  - "reconstruction mechanism"
+  - "identity-preserving constraints"
+  - "identity-preserving variation"
+  - "referential continuity"
+  - "semantic coherence"
+  - "K6 Semantic Connectome"
+  - "Entity"
+  - "Representation"
+  - "Interpretation"
+  - "Trust"
+  - "Relationship"
+  - "Reconstruction"
+  - "entity resolution"
+  - "Reconstruction Failure Modes"
+  - "Referential Reconstruction Failures"
+  - "Entity Substitution"
+  - "Merge Failure"
+  - "Split Failure"
+  - "Entity Omission"
+  - "Semantic Coherence Failures"
+  - "Semantic Fragmentation"
+  - "Temporal Reconstruction Failures"
+  - "Temporal Discontinuity"
+  - "Temporal Misalignment"
+  - "Contextual Adequacy Failures"
+  - "Contextual Displacement"
+  - "Identity Collapse"
+  - "Semantic Vulnerability"
+  - "Semantic Robustness"
+  - "Reconstruction Capture"
+  - "knowledge representation"
+  - "semantic interoperability"
+  - "provenance"
+  - "stable concept URIs"
