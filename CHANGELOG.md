@@ -10,3 +10,4 @@
 - Resources and `plan_mutation_guardrail_integration` prompt.
 - Origin allow-list, bounded inputs, and approximate Cloudflare rate limiting.
 - Explicit non-implementation boundary for the MVDIO Supervisor and future dependency-aware evidence flow.
+- Bundled live SCF status metadata synchronized to v0.1.3 / schema v0.2.1 / 49 events through 2026-11-11; the archived v0.9.0 snapshot remains v0.1.1 / 45 events.
