@@ -297,11 +297,19 @@ await check("unknown service path returns HTTP 404", async () => {
 await check("allowed CORS preflight is accepted", async () => {
   const response = await fetch(urls.mcp, {
     method: "OPTIONS",
-    headers: { Origin: "https://chatgpt.com" },
+    headers: {
+      Origin: "https://chatgpt.com",
+      "Access-Control-Request-Method": "POST",
+      "Access-Control-Request-Headers": "content-type, accept, mcp-protocol-version, mcp-method, mcp-name"
+    },
     signal: AbortSignal.timeout(15000)
   });
   assert.equal(response.status, 204);
   assert.equal(response.headers.get("access-control-allow-origin"), "https://chatgpt.com");
+  const allowedHeaders = (response.headers.get("access-control-allow-headers") ?? "").toLowerCase();
+  for (const header of ["content-type", "accept", "mcp-protocol-version", "mcp-method", "mcp-name"]) {
+    assert.ok(allowedHeaders.split(",").map((value) => value.trim()).includes(header), `CORS preflight does not allow ${header}`);
+  }
 });
 
 await check("disallowed Origin is rejected with HTTP 403", async () => {
