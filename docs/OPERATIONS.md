@@ -46,7 +46,7 @@ The remote suite does not deliberately exhaust the rate limiter, test sustained 
 
 - `npm run check` passes.
 - The manual Production MCP Smoke Tests workflow passes against the intended deployment.
-- The MCP Inspector can discover the tools, resources, and prompt.
+- The official MCP TypeScript SDK compatibility test (`node tests/sdk-client.mjs`) passes against the pinned `2026-07-28` protocol revision. MCP Inspector 2.14.0 is known not to negotiate this revision and is not a release gate.
 - The main mutation profile marks diagnostic-to-constraint examples as `illustrative`.
 - `GET /mcp` returns 405; `POST /mcp` is the Streamable HTTP endpoint.
 - The handler is configured with `legacy: "reject"` and serves MCP `2026-07-28` only.
