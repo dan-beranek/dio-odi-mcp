@@ -75,12 +75,12 @@
     },
     {
       "identifier": "10.48550/arXiv.2610.37407",
-      "relation": "isDocumentedBy",
+      "relation": "references",
       "scheme": "doi"
     },
     {
       "identifier": "10.5281/zenodo.23269323",
-      "relation": "isDerivedFrom",
+      "relation": "references",
       "scheme": "doi"
     }
   ],
