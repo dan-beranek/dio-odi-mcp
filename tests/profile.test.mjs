@@ -126,7 +126,14 @@ test("machine-readable MCP contract matches the published tool and resource inve
   assert.equal(manifest.prompts[0].arguments.temporalScope.$ref, "#/$defs/shortContext");
   assert.equal(manifest.prompts[0].arguments.domainPolicyVersion.maxLength, 120);
   assert.equal(manifest.protocol.version, "2026-07-28");
-  assert.equal(manifest.protocol.legacyTransport, "rejected");
+  assert.deepEqual(manifest.protocol.supportedVersions.modern, ["2026-07-28"]);
+  assert.equal(manifest.protocol.supportedVersions.legacy.earliest, "2024-10-07");
+  assert.equal(manifest.protocol.supportedVersions.legacy.latest, "2025-11-25");
+  assert.equal(manifest.protocol.supportedVersions.legacy.mode, "stateless");
+  assert.equal(manifest.protocol.legacyTransport, "stateless Streamable HTTP compatibility; no protocol sessions or standalone SSE");
+
+  const serverSource = readFileSync(resolve(here, "../src/index.ts"), "utf8");
+  assert.match(serverSource, /legacy: "stateless"/);
 });
 
 test("resources are bounded and versioned read-only documents", () => {
