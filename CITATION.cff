@@ -6,8 +6,7 @@ authors:
   - family-names: Beránek
     given-names: Daniel
     orcid: "https://orcid.org/0009-0004-0050-0264"
-version: 0.1.1
-doi: "10.5281/zenodo.24123229"
+version: 0.1.2
 identifiers:
   - type: doi
     value: "10.5281/zenodo.24123228"
