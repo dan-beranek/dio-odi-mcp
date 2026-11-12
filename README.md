@@ -7,6 +7,9 @@ A public, read-only Model Context Protocol server for the DIO/ODI Reference Mode
 - MCP endpoint: `https://mcp.danielberanek.cz/mcp`
 - Human-readable service root: `https://mcp.danielberanek.cz/`
 - Health: `https://mcp.danielberanek.cz/healthz`
+- LLM-readable overview: `https://mcp.danielberanek.cz/llms.txt`
+- Sitemap: `https://mcp.danielberanek.cz/sitemap.xml`
+- Crawler rules: `https://mcp.danielberanek.cz/robots.txt`
 - Canonical Reference Model: <https://vocab.danielberanek.cz/>
 - Source paper: <https://arxiv.org/abs/2610.37407v2>
 - Agentic ER architecture mapping: <https://vocab.danielberanek.cz/mappings/agentic-er-architecture/>
@@ -36,6 +39,16 @@ This is not an MVDIO Supervisor and not an authorization service.
 - It does not claim that dependency-aware evidence lineage or control of the full hypothesis-conditioned Plan–Act–Observe–Update loop is implemented. That remains future research in the paper.
 
 The Reference Vocabulary provides canonical concepts. The Agentic ER and Policy-as-Code mappings are derived, non-normative application layers. Their example bindings are not universal domain policies.
+
+## Web discovery
+
+The service root is a single human-readable landing page. Its crawler and machine-discovery documents are served directly by the Worker:
+
+- `/robots.txt` allows public documentation crawling, excludes the protocol and health endpoints, and points to the sitemap.
+- `/sitemap.xml` lists the canonical homepage only; protocol and health endpoints are not indexable website pages.
+- `/llms.txt` provides a concise service overview, endpoint guidance, tool/resource inventory, version context, and architectural boundaries.
+
+The full technical definitions remain in the API contract, machine-readable contract, and examples linked above. There is intentionally no separate `llms-full.txt`.
 
 ## Architecture
 
@@ -175,7 +188,7 @@ The bundled snapshot in `src/catalog.mjs` identifies:
 - Reference Model archive v0.9.0, DOI `10.5281/zenodo.24085589`;
 - Reference Vocabulary v0.2.2;
 - Agentic ER mapping v0.3.1 (120 local architecture concepts and 206 qualified relation assertions);
-- live SCF v0.1.3 / schema v0.2.1 / 49 events through 2026-11-11;
+- live SCF v0.1.4 / schema v0.2.1 / 50 events through 2026-11-11;
 - Policy-as-Code mapping last modified 2026-11-09.
 
 The Reference Model archive and live SCF are intentionally distinct: the live feed was maintained after the v0.9.0 archive. A later vocabulary or mapping update must change the bundled snapshot and its tests through a reviewed pull request. Do not silently overwrite archival version metadata with live values.
