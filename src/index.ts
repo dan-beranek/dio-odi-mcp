@@ -1,4 +1,5 @@
 import packageJson from "../package.json";
+import { LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
 import { createMcpHandler } from "agents/mcp/server";
@@ -240,109 +241,6 @@ function createServer() {
 
   return server;
 }
-
-const ROBOTS_TXT = \`User-agent: *
-Allow: /
-Disallow: /mcp
-Disallow: /healthz
-
-Sitemap: https://mcp.danielberanek.cz/sitemap.xml
-\`;
-
-const SITEMAP_XML = \`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mcp.danielberanek.cz/</loc>
-  </url>
-</urlset>
-\`;
-
-const LLMS_TXT = \`# DIO/ODI MCP
-
-> Public, stateless, read-only Model Context Protocol service exposing a bounded DIO/ODI Reference Model snapshot and selected derived Agentic Entity Resolution and Policy-as-Code integration mappings.
-
-## Service
-
-- Homepage: https://mcp.danielberanek.cz/
-- MCP endpoint: https://mcp.danielberanek.cz/mcp
-- Health: https://mcp.danielberanek.cz/healthz
-- Source repository: https://github.com/dan-beranek/dio-odi-mcp
-- README: https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md
-- API contract: https://github.com/dan-beranek/dio-odi-mcp/blob/main/docs/API-CONTRACT.md
-- Machine-readable MCP contract: https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract.json
-- Agentic ER merge-flow example: https://github.com/dan-beranek/dio-odi-mcp/blob/main/examples/agentic-er-merge-flow.md
-
-The service uses MCP Streamable HTTP at \`/mcp\`. MCP requests use HTTP POST. Opening \`/mcp\` in a browser is not a supported way to inspect the protocol endpoint; GET returns HTTP 405.
-
-## Purpose and capabilities
-
-The MCP service distributes versioned reference material for integrating applications. Its primary use case is an Agentic ER application retrieving a mutation-specific diagnostic profile for MERGE, SPLIT, or UNMERGE and using that material as one input to its own domain policy and local Supervisor.
-
-It exposes ten read-only tools:
-
-- \`get_mutation_guardrail_profile\`
-- \`get_reconstruction_failure_profile\`
-- \`get_evidence_promotion_contract\`
-- \`get_commit_boundary_contract\`
-- \`search_concepts\`
-- \`get_concept\`
-- \`get_relations\`
-- \`get_application_mapping\`
-- \`get_policy_as_code_mapping\`
-- \`get_reference_status\`
-
-It also exposes seven read-only resources:
-
-- \`dio-odi://reference/status\`
-- \`dio-odi://reference/vocabulary\`
-- \`dio-odi://diagnostics/reconstruction-failure-taxonomy\`
-- \`dio-odi://contracts/evidence-promotion\`
-- \`dio-odi://contracts/commit-boundary\`
-- \`dio-odi://mappings/agentic-er\`
-- \`dio-odi://mappings/policy-as-code\`
-
-One integration-planning prompt is available: \`plan_mutation_guardrail_integration\`.
-
-## Architectural boundaries
-
-DIO/ODI MCP is a reference and integration-data interface. It is not an MVDIO Supervisor and is not an authorization service.
-
-- It does not read an integrating application's graph, evidence stores, domain policy, promotion records, or snapshots.
-- It does not verify evidence or perform claim-specific evidence promotion.
-- It does not run application-side graph constraints or authorize Phase 1 / Phase 2 mutations.
-- It does not issue authorization tokens or return \`PASS\`, \`BREACH\`, or \`UNKNOWN_EVIDENCE\` verdicts.
-- It does not commit or revert writes in an integrating application.
-- Illustrative diagnostic-to-constraint mappings are examples, not universal or executable domain policies.
-
-The integrating application remains responsible for its domain policy, evidence validation and promotion, local Supervisor, version/snapshot validation, and protected persistence.
-
-## Reference data and versions
-
-The deployed software release is v0.1.1 (MIT-licensed implementation).
-
-The bundled reference metadata identifies:
-
-- DIO/ODI Reference Model archive: v0.9.0 — https://doi.org/10.5281/zenodo.24085589
-- Reference Vocabulary: v0.2.2 — https://vocab.danielberanek.cz/dio-odi/
-- Agentic ER architecture mapping: v0.3.1 — https://vocab.danielberanek.cz/mappings/agentic-er-architecture/
-- Policy-as-Code mapping: derived and non-normative — https://vocab.danielberanek.cz/mappings/commit-boundary-policy/
-- Live Semantic Change Feed metadata: v0.1.4, schema v0.2.1, 50 events through 2026-11-11.
-- Archived Reference Model v0.9.0 feed snapshot: v0.1.1, schema v0.2.0, 45 events through 2026-11-09.
-
-The live Semantic Change Feed is published separately at https://vocab.danielberanek.cz/semantic-change-feed/events.json. The MCP bundle contains its version/status metadata; it does not expose the complete feed as an MCP resource. The immutable Reference Model archive and the later live feed are distinct states. Live-feed updates do not modify the historical archive.
-
-The canonical Reference Vocabulary and derived application mappings are separate layers. Derived mappings do not redefine canonical concepts.
-
-## Discovery documents
-
-- Crawler rules: https://mcp.danielberanek.cz/robots.txt
-- Sitemap: https://mcp.danielberanek.cz/sitemap.xml
-- This LLM-oriented overview: https://mcp.danielberanek.cz/llms.txt
-
-## Licensing
-
-The software implementation is MIT-licensed. Embedded and adapted DIO/ODI reference content remains subject to CC BY 4.0. Attribution: https://github.com/dan-beranek/dio-odi-mcp/blob/main/data/ATTRIBUTION.md
-\`;
 
 const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string }> = {
   "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
