@@ -116,7 +116,7 @@ The MCP Inspector 2.14.0 was tested against the pinned MCP revision `2026-07-28`
 
 ## Deployment
 
-The Worker is configured for `workers.dev` and the production Custom Domain `mcp.danielberanek.cz`. The MCP handler validates `Host` and `Origin`; the configured browser-origin host allowlist is intentionally narrow and native clients without an `Origin` header remain supported.
+The Worker has `workers_dev: false`; it is exposed through the production Cloudflare Custom Domain `mcp.danielberanek.cz`. The MCP handler validates `Host` and `Origin`; the configured browser-origin host allowlist is intentionally narrow and native clients without an `Origin` header remain supported.
 
 ### First deployment from a local terminal
 
@@ -131,7 +131,7 @@ Cloudflare Custom Domains create the DNS record and certificate for the Worker w
 
 ### GitHub Actions deployment
 
-The workflow `.github/workflows/deploy.yml` deploys after changes reach `main`. Add these GitHub repository secrets:
+The workflow `.github/workflows/deploy.yml` is triggered manually through `workflow_dispatch`. A merge into `main` does not deploy the Worker automatically. Add these GitHub repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
