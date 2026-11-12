@@ -153,6 +153,8 @@ await check("service root is reachable", async () => {
   assert.match(html, /https:\/\/github\.com\/dan-beranek\/dio-odi-mcp/);
   assert.match(html, /id="quick-start"/);
   assert.match(html, /get_mutation_guardrail_profile/);
+  assert.match(html, /Live Semantic Change Feed/);
+  assert.match(html, /v0\.1\.4/);
   assert.match(html, /rel="sitemap"/);
   assert.match(html, /href="https:\/\/mcp\.danielberanek\.cz\/llms\.txt"/);
 });
@@ -245,7 +247,13 @@ for (const uri of EXPECTED_RESOURCES) {
     assert.ok(contents.length > 0);
     assert.equal(contents[0].uri, uri);
     assert.ok(contents[0].text.length > 0);
-    JSON.parse(contents[0].text);
+    const resourceData = JSON.parse(contents[0].text);
+    if (uri === "dio-odi://reference/status") {
+      assert.equal(resourceData.semanticChangeFeed.liveVersion, "0.1.4");
+      assert.equal(resourceData.semanticChangeFeed.events, 50);
+      assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
+      assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.events, 45);
+    }
   });
 }
 
@@ -324,6 +332,7 @@ const toolCases = [
     assert.equal(data.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
     assert.equal(data.semanticChangeFeed.archiveSnapshot.schemaVersion, "0.2.0");
     assert.equal(data.semanticChangeFeed.archiveSnapshot.events, 45);
+    assert.equal(data.checkedAt, "2026-11-12");
   }]
 ];
 
