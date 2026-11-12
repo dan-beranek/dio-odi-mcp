@@ -24,6 +24,9 @@ function resolveUrls(raw) {
     origin: base.origin,
     root: `${base.origin}${rootPath || "/"}`,
     health: `${base.origin}${rootPath}/healthz`,
+    robots: `${base.origin}${rootPath}/robots.txt`,
+    sitemap: `${base.origin}${rootPath}/sitemap.xml`,
+    llms: `${base.origin}${rootPath}/llms.txt`,
     mcp: `${base.origin}${mcpPath}`
   };
 }
@@ -150,6 +153,44 @@ await check("service root is reachable", async () => {
   assert.match(html, /https:\/\/github\.com\/dan-beranek\/dio-odi-mcp/);
   assert.match(html, /id="quick-start"/);
   assert.match(html, /get_mutation_guardrail_profile/);
+  assert.match(html, /Live Semantic Change Feed/);
+  assert.match(html, /v0\.1\.4/);
+  assert.match(html, /rel="sitemap"/);
+  assert.match(html, /href="https:\/\/mcp\.danielberanek\.cz\/llms\.txt"/);
+});
+
+await check("robots.txt publishes crawler rules and sitemap location", async () => {
+  const response = await fetch(urls.robots, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /text\/plain/i);
+  const body = await response.text();
+  assert.match(body, /^User-agent: \\*/m);
+  assert.match(body, /^Allow: \\/$/m);
+  assert.match(body, /^Disallow: \\/mcp$/m);
+  assert.match(body, /^Disallow: \\/healthz$/m);
+  assert.match(body, /^Sitemap: https:\\/\\/mcp\\.danielberanek\\.cz\\/sitemap\\.xml$/m);
+});
+
+await check("sitemap.xml lists the canonical homepage only", async () => {
+  const response = await fetch(urls.sitemap, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /application\/xml/i);
+  const body = await response.text();
+  assert.match(body, /<urlset[^>]+xmlns="http:\\/\\/www\\.sitemaps\\.org\\/schemas\\/sitemap\\/0\\.9"/);
+  assert.match(body, /<loc>https:\\/\\/mcp\\.danielberanek\\.cz\\/<\\/loc>/);
+  assert.doesNotMatch(body, /<loc>[^<]*\\/(?:mcp|healthz)[^<]*<\\/loc>/);
+});
+
+await check("llms.txt describes the MCP endpoint and its architectural boundaries", async () => {
+  const response = await fetch(urls.llms, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /text\/plain/i);
+  const body = await response.text();
+  assert.match(body, /# DIO\\/ODI MCP/);
+  assert.match(body, /https:\\/\\/mcp\\.danielberanek\\.cz\\/mcp/);
+  assert.match(body, /get_mutation_guardrail_profile/);
+  assert.match(body, /not an authorization service/);
+  assert.match(body, /0\\.1\\.4/);
 });
 
 await check("health endpoint reports expected service and versions", async () => {
@@ -206,7 +247,13 @@ for (const uri of EXPECTED_RESOURCES) {
     assert.ok(contents.length > 0);
     assert.equal(contents[0].uri, uri);
     assert.ok(contents[0].text.length > 0);
-    JSON.parse(contents[0].text);
+    const resourceData = JSON.parse(contents[0].text);
+    if (uri === "dio-odi://reference/status") {
+      assert.equal(resourceData.semanticChangeFeed.liveVersion, "0.1.4");
+      assert.equal(resourceData.semanticChangeFeed.events, 50);
+      assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
+      assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.events, 45);
+    }
   });
 }
 
@@ -277,7 +324,15 @@ const toolCases = [
     assert.equal(data.referenceModel.archivedVersion, "0.9.0");
     assert.equal(data.referenceVocabulary.version, "0.2.2");
     assert.equal(data.applicationMappings.agenticEr.version, "0.3.1");
-    assert.ok(data.semanticChangeFeed.events >= 1);
+    assert.equal(data.semanticChangeFeed.liveVersion, "0.1.4");
+    assert.equal(data.semanticChangeFeed.schemaVersion, "0.2.1");
+    assert.equal(data.semanticChangeFeed.events, 50);
+    assert.equal(data.semanticChangeFeed.coverageThrough, "2026-11-11");
+    assert.equal(data.semanticChangeFeed.archiveSnapshot.referenceModelVersion, "0.9.0");
+    assert.equal(data.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
+    assert.equal(data.semanticChangeFeed.archiveSnapshot.schemaVersion, "0.2.0");
+    assert.equal(data.semanticChangeFeed.archiveSnapshot.events, 45);
+    assert.equal(data.checkedAt, "2026-11-12");
   }]
 ];
 

@@ -21,14 +21,17 @@ test("vocabulary snapshot contains 40 concepts and expected 4-domain / 8-mode ta
 
 test("reference status keeps live SCF metadata separate from the immutable archive snapshot", () => {
   const scf = REFERENCE_STATUS.semanticChangeFeed;
-  assert.equal(scf.liveVersion, "0.1.3");
+  assert.equal(scf.liveVersion, "0.1.4");
   assert.equal(scf.schemaVersion, "0.2.1");
-  assert.equal(scf.events, 49);
+  assert.equal(scf.events, 50);
   assert.equal(scf.coverageThrough, "2026-11-11");
+  assert.equal(scf.archiveSnapshot.referenceModelVersion, "0.9.0");
   assert.equal(scf.archiveSnapshot.feedVersion, "0.1.1");
   assert.equal(scf.archiveSnapshot.schemaVersion, "0.2.0");
   assert.equal(scf.archiveSnapshot.events, 45);
   assert.equal(scf.archiveSnapshot.coverageThrough, "2026-11-09");
+  assert.equal(REFERENCE_STATUS.checkedAt, "2026-11-12");
+  assert.equal(RESOURCE_DOCS["dio-odi://reference/status"].content, REFERENCE_STATUS);
 });
 
 test("Identity Collapse is not a fifth branch and Semantic Vulnerability is not a failure mode", () => {

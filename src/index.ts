@@ -1,4 +1,5 @@
 import packageJson from "../package.json";
+import { LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
 import { createMcpHandler } from "agents/mcp/server";
@@ -241,6 +242,12 @@ function createServer() {
   return server;
 }
 
+const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string }> = {
+  "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
+  "/sitemap.xml": { content: SITEMAP_XML, contentType: "application/xml; charset=utf-8" },
+  "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" }
+};
+
 const HOME_PAGE_HTML = `<!doctype html>
 <html lang="en">
 <head>
@@ -251,6 +258,8 @@ const HOME_PAGE_HTML = `<!doctype html>
 <meta name="author" content="Daniel Beránek">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <link rel="canonical" href="https://mcp.danielberanek.cz/">
+<link rel="sitemap" type="application/xml" href="https://mcp.danielberanek.cz/sitemap.xml">
+<link rel="alternate" type="text/markdown" href="https://mcp.danielberanek.cz/llms.txt" title="LLM-readable service overview">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="DIO/ODI MCP">
@@ -431,6 +440,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <tr><th>Software</th><td>DIO/ODI MCP v__SERVICE_VERSION__ · <a href="https://doi.org/10.5281/zenodo.24123229">version DOI</a> · <a href="https://doi.org/10.5281/zenodo.24123228">Concept DOI</a></td></tr>
 <tr><th>Reference Model archive</th><td>v0.9.0 · <a href="https://doi.org/10.5281/zenodo.24085589">10.5281/zenodo.24085589</a></td></tr>
 <tr><th>Reference Vocabulary</th><td>v0.2.2 · <a href="https://vocab.danielberanek.cz/dio-odi/">Canonical SKOS vocabulary</a></td></tr>
+<tr><th>Live Semantic Change Feed</th><td>v0.1.4 · schema v0.2.1 · 50 events through 11 November 2026 · <a href="https://vocab.danielberanek.cz/semantic-change-feed/events.json">Live feed</a></td></tr>
 <tr><th>Agentic ER mapping</th><td>v0.3.1 · <a href="https://vocab.danielberanek.cz/mappings/agentic-er-architecture/">Derived architecture mapping</a></td></tr>
 <tr><th>Policy-as-Code mapping</th><td>Derived, non-normative · <a href="https://vocab.danielberanek.cz/mappings/commit-boundary-policy/">Mapping for OPA/Rego and Cedar</a></td></tr>
 <tr><th>Research paper</th><td><a href="https://arxiv.org/abs/2610.37407v2">Constraining the Commit Boundary (v2)</a></td></tr>
@@ -441,6 +451,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 </main>
 <footer class="site-footer">
 <p>Daniel Beránek · <a href="https://orcid.org/0009-0004-0050-0264">ORCID 0009-0004-0050-0264</a> · <a href="https://danielberanek.cz/manifest-dio/">DIO/ODI Hub</a></p>
+<p><a href="/llms.txt">LLM-readable overview</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">Crawler rules</a></p>
 <p><a href="https://github.com/dan-beranek/dio-odi-mcp">Source repository</a> · <a href="/healthz">Health status</a> · <a href="https://vocab.danielberanek.cz/">DIO/ODI Reference Model</a></p>
 <p>Software implementation: MIT · Embedded DIO/ODI reference content: CC BY 4.0</p>
 </footer>
@@ -499,6 +510,24 @@ export default {
     if (url.pathname === "/healthz" && (request.method === "GET" || request.method === "HEAD")) {
       const health = { status: "ok", service: "dio-odi-mcp", version: SERVICE_VERSION, mode: "read-only", referenceModel: REFERENCE_STATUS.referenceModel.archivedVersion, vocabulary: REFERENCE_STATUS.referenceVocabulary.version, mapping: REFERENCE_STATUS.applicationMappings.agenticEr.version };
       return request.method === "HEAD" ? new Response(null, { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } }) : jsonResponse(health);
+    }
+
+    const machineDocument = MACHINE_DOCUMENTS[url.pathname];
+    if (machineDocument) {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return jsonResponse({ error: "method_not_allowed", detail: "Use GET or HEAD for this static discovery document." }, 405, {
+          Allow: "GET, HEAD",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff"
+        });
+      }
+      return new Response(request.method === "HEAD" ? null : machineDocument.content, {
+        headers: {
+          "Content-Type": machineDocument.contentType,
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff"
+        }
+      });
     }
 
     if (url.pathname !== "/mcp") return jsonResponse({ error: "not_found" }, 404);
