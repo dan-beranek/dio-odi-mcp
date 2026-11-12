@@ -363,7 +363,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
   }
 }</code></pre>
 <p>Use the client’s documented remote-server configuration format. Clients that require a local stdio process need a compatible bridge; see the <a href="https://github.com/dan-beranek/dio-odi-mcp/tree/main/examples">client examples</a> and <a href="https://github.com/dan-beranek/dio-odi-mcp#client-configuration-examples">README instructions</a>.</p>
-<div class="note"><strong>Transport:</strong> Streamable HTTP · stateless · protocol revision <code>2026-07-28</code> · read-only. The <code>/mcp</code> endpoint is for MCP clients, not a browser-readable API page.</div>
+<div class="note"><strong>Transport:</strong> Streamable HTTP · stateless · protocols <code>2026-07-28</code> (modern) and <code>2025-11-25</code> (legacy stateless) · read-only. The <code>/mcp</code> endpoint is for MCP clients, not a browser-readable API page.</div>
 </section>
 <section id="use-cases">
 <h2>Start with a use case</h2>
@@ -460,7 +460,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 
 const handler = createMcpHandler(createServer, {
   route: "/mcp",
-  legacy: "reject",
+  legacy: "stateless",
   allowedHostnames: ["mcp.danielberanek.cz", "localhost", "127.0.0.1"],
   allowedOriginHostnames: [
     "mcp.danielberanek.cz",
