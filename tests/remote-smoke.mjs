@@ -164,11 +164,11 @@ await check("robots.txt publishes crawler rules and sitemap location", async () 
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /text\/plain/i);
   const body = await response.text();
-  assert.match(body, /^User-agent: \\*/m);
-  assert.match(body, /^Allow: \\/$/m);
-  assert.match(body, /^Disallow: \\/mcp$/m);
-  assert.match(body, /^Disallow: \\/healthz$/m);
-  assert.match(body, /^Sitemap: https:\\/\\/mcp\\.danielberanek\\.cz\\/sitemap\\.xml$/m);
+  assert.match(body, /^User-agent: \*$/m);
+  assert.match(body, /^Allow: \/$/m);
+  assert.match(body, /^Disallow: \/mcp$/m);
+  assert.match(body, /^Disallow: \/healthz$/m);
+  assert.match(body, /^Sitemap: https:\/\/mcp\.danielberanek\.cz\/sitemap\.xml$/m);
 });
 
 await check("sitemap.xml lists the canonical homepage only", async () => {
@@ -176,9 +176,9 @@ await check("sitemap.xml lists the canonical homepage only", async () => {
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /application\/xml/i);
   const body = await response.text();
-  assert.match(body, /<urlset[^>]+xmlns="http:\\/\\/www\\.sitemaps\\.org\\/schemas\\/sitemap\\/0\\.9"/);
-  assert.match(body, /<loc>https:\\/\\/mcp\\.danielberanek\\.cz\\/<\\/loc>/);
-  assert.doesNotMatch(body, /<loc>[^<]*\\/(?:mcp|healthz)[^<]*<\\/loc>/);
+  assert.match(body, /<urlset[^>]+xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
+  assert.match(body, /<loc>https:\/\/mcp\.danielberanek\.cz\/<\/loc>/);
+  assert.doesNotMatch(body, /<loc>[^<]*\/(?:mcp|healthz)[^<]*<\/loc>/);
 });
 
 await check("llms.txt describes the MCP endpoint and its architectural boundaries", async () => {
@@ -186,11 +186,11 @@ await check("llms.txt describes the MCP endpoint and its architectural boundarie
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /text\/plain/i);
   const body = await response.text();
-  assert.match(body, /# DIO\\/ODI MCP/);
-  assert.match(body, /https:\\/\\/mcp\\.danielberanek\\.cz\\/mcp/);
+  assert.match(body, /# DIO\/ODI MCP/);
+  assert.match(body, /https:\/\/mcp\.danielberanek\.cz\/mcp/);
   assert.match(body, /get_mutation_guardrail_profile/);
   assert.match(body, /not an authorization service/);
-  assert.match(body, /0\\.1\\.4/);
+  assert.match(body, /0\.1\.4/);
 });
 
 await check("health endpoint reports expected service and versions", async () => {
