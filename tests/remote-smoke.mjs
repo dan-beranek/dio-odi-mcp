@@ -178,7 +178,9 @@ await check("sitemap.xml lists the canonical homepage only", async () => {
   const body = await response.text();
   assert.match(body, /<urlset[^>]+xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
   assert.match(body, /<loc>https:\/\/mcp\.danielberanek\.cz\/<\/loc>/);
-  assert.doesNotMatch(body, /<loc>[^<]*\/(?:mcp|healthz)[^<]*<\/loc>/);
+  const locations = [...body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, value]) => new URL(value));
+  assert.deepEqual(locations.map((location) => location.href), ["https://mcp.danielberanek.cz/"]);
+  assert.ok(locations.every((location) => !["/mcp", "/healthz"].some((path) => location.pathname === path || location.pathname.startsWith(`${path}/`))));
 });
 
 await check("llms.txt describes the MCP endpoint and its architectural boundaries", async () => {
