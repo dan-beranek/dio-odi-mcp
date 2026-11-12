@@ -1,27 +1,47 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mcp.danielberanek.cz/schemas/mcp-contract-v0.1.0.json",
+  "$id": "https://mcp.danielberanek.cz/schemas/mcp-contract-v0.1.1.json",
   "title": "DIO/ODI MCP contract",
-  "description": "Machine-readable manifest of the public read-only DIO/ODI MCP tools, resources, and prompt. The schemas mirror the v0.1.0 server contract.",
-  "version": "0.1.0",
+  "description": "Machine-readable manifest of the public read-only DIO/ODI MCP tools, resources, prompt, and supported protocol generations.",
+  "version": "0.1.1",
   "protocol": {
     "name": "Model Context Protocol",
     "version": "2026-07-28",
     "transport": "Streamable HTTP",
     "endpoint": "/mcp",
     "stateless": true,
-    "legacyTransport": "rejected",
+    "legacyTransport": "stateless Streamable HTTP compatibility; no protocol sessions or standalone SSE",
     "readOnly": true,
-    "authentication": "none; only public reference content is exposed"
+    "authentication": "none; only public reference content is exposed",
+    "supportedVersions": {
+      "modern": [
+        "2026-07-28"
+      ],
+      "legacy": {
+        "earliest": "2024-10-07",
+        "latest": "2025-11-25",
+        "mode": "stateless"
+      }
+    }
   },
   "$defs": {
     "actionClass": {
       "type": "string",
-      "enum": ["READ", "STAGE_LOCAL", "REVERSIBLE_WRITE", "IRREVERSIBLE_WRITE"]
+      "enum": [
+        "READ",
+        "STAGE_LOCAL",
+        "REVERSIBLE_WRITE",
+        "IRREVERSIBLE_WRITE"
+      ]
     },
     "mutationType": {
       "type": "string",
-      "enum": ["MERGE", "SPLIT", "UNMERGE", "OTHER"]
+      "enum": [
+        "MERGE",
+        "SPLIT",
+        "UNMERGE",
+        "OTHER"
+      ]
     },
     "failureMode": {
       "type": "string",
@@ -38,7 +58,12 @@
     },
     "domain": {
       "type": "string",
-      "enum": ["RRF", "SCF", "TRF", "CAF"]
+      "enum": [
+        "RRF",
+        "SCF",
+        "TRF",
+        "CAF"
+      ]
     },
     "shortContext": {
       "type": "string",
@@ -55,14 +80,47 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "actionClass": { "$ref": "#/$defs/actionClass", "default": "IRREVERSIBLE_WRITE" },
-          "mutationType": { "$ref": "#/$defs/mutationType", "default": "MERGE" },
-          "entityClass": { "$ref": "#/$defs/shortContext" },
-          "observationDomain": { "$ref": "#/$defs/shortContext" },
-          "temporalScope": { "$ref": "#/$defs/shortContext" },
-          "domainPolicyVersion": { "type": "string", "maxLength": 120 },
-          "failureModes": { "type": "array", "items": { "$ref": "#/$defs/failureMode" }, "maxItems": 8, "uniqueItems": true },
-          "include": { "type": "array", "items": { "type": "string", "enum": ["evidence_requirements", "commit_checks"] }, "maxItems": 2, "uniqueItems": true }
+          "actionClass": {
+            "$ref": "#/$defs/actionClass",
+            "default": "IRREVERSIBLE_WRITE"
+          },
+          "mutationType": {
+            "$ref": "#/$defs/mutationType",
+            "default": "MERGE"
+          },
+          "entityClass": {
+            "$ref": "#/$defs/shortContext"
+          },
+          "observationDomain": {
+            "$ref": "#/$defs/shortContext"
+          },
+          "temporalScope": {
+            "$ref": "#/$defs/shortContext"
+          },
+          "domainPolicyVersion": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "failureModes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/failureMode"
+            },
+            "maxItems": 8,
+            "uniqueItems": true
+          },
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "evidence_requirements",
+                "commit_checks"
+              ]
+            },
+            "maxItems": 2,
+            "uniqueItems": true
+          }
         },
         "additionalProperties": false
       },
@@ -77,14 +135,41 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "domains": { "type": "array", "items": { "$ref": "#/$defs/domain" }, "maxItems": 4, "uniqueItems": true },
-          "failureModes": { "type": "array", "items": { "$ref": "#/$defs/failureMode" }, "maxItems": 8, "uniqueItems": true },
+          "domains": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/domain"
+            },
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "failureModes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/failureMode"
+            },
+            "maxItems": 8,
+            "uniqueItems": true
+          },
           "include": {
             "type": "array",
-            "items": { "type": "string", "enum": ["definitions", "diagnostic_boundaries", "constraint_mappings", "source_provenance"] },
+            "items": {
+              "type": "string",
+              "enum": [
+                "definitions",
+                "diagnostic_boundaries",
+                "constraint_mappings",
+                "source_provenance"
+              ]
+            },
             "maxItems": 4,
             "uniqueItems": true,
-            "default": ["definitions", "diagnostic_boundaries", "constraint_mappings", "source_provenance"]
+            "default": [
+              "definitions",
+              "diagnostic_boundaries",
+              "constraint_mappings",
+              "source_provenance"
+            ]
           }
         },
         "additionalProperties": false
@@ -96,7 +181,11 @@
       "readOnlyHint": true,
       "destructiveHint": false,
       "idempotentHint": true,
-      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
     },
     {
       "name": "get_commit_boundary_contract",
@@ -107,8 +196,16 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "phase": { "type": "string", "enum": ["PHASE_1", "PHASE_2"] },
-          "actionClass": { "$ref": "#/$defs/actionClass" }
+          "phase": {
+            "type": "string",
+            "enum": [
+              "PHASE_1",
+              "PHASE_2"
+            ]
+          },
+          "actionClass": {
+            "$ref": "#/$defs/actionClass"
+          }
         },
         "additionalProperties": false
       }
@@ -122,10 +219,21 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "query": { "type": "string", "minLength": 1, "maxLength": 180 },
-          "limit": { "type": "integer", "minimum": 1, "maximum": 30, "default": 10 }
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30,
+            "default": 10
+          }
         },
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "additionalProperties": false
       }
     },
@@ -137,8 +245,16 @@
       "idempotentHint": true,
       "inputSchema": {
         "type": "object",
-        "properties": { "identifier": { "type": "string", "minLength": 1, "maxLength": 240 } },
-        "required": ["identifier"],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "required": [
+          "identifier"
+        ],
         "additionalProperties": false
       }
     },
@@ -150,8 +266,16 @@
       "idempotentHint": true,
       "inputSchema": {
         "type": "object",
-        "properties": { "identifier": { "type": "string", "minLength": 1, "maxLength": 240 } },
-        "required": ["identifier"],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "required": [
+          "identifier"
+        ],
         "additionalProperties": false
       }
     },
@@ -164,8 +288,26 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "mapping": { "type": "string", "enum": ["agentic-er", "policy-as-code"], "default": "agentic-er" },
-          "section": { "type": "string", "enum": ["all", "overview", "diagnostic-to-constraint", "evidence", "authorization", "boundary"], "default": "all" }
+          "mapping": {
+            "type": "string",
+            "enum": [
+              "agentic-er",
+              "policy-as-code"
+            ],
+            "default": "agentic-er"
+          },
+          "section": {
+            "type": "string",
+            "enum": [
+              "all",
+              "overview",
+              "diagnostic-to-constraint",
+              "evidence",
+              "authorization",
+              "boundary"
+            ],
+            "default": "all"
+          }
         },
         "additionalProperties": false
       }
@@ -176,7 +318,11 @@
       "readOnlyHint": true,
       "destructiveHint": false,
       "idempotentHint": true,
-      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
     },
     {
       "name": "get_reference_status",
@@ -184,7 +330,11 @@
       "readOnlyHint": true,
       "destructiveHint": false,
       "idempotentHint": true,
-      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
     }
   ],
   "resources": [
@@ -201,12 +351,27 @@
       "name": "plan_mutation_guardrail_integration",
       "readOnly": true,
       "arguments": {
-        "actionClass": { "$ref": "#/$defs/actionClass", "default": "IRREVERSIBLE_WRITE" },
-        "mutationType": { "$ref": "#/$defs/mutationType", "default": "MERGE" },
-        "entityClass": { "$ref": "#/$defs/shortContext" },
-        "observationDomain": { "$ref": "#/$defs/shortContext" },
-        "temporalScope": { "$ref": "#/$defs/shortContext" },
-        "domainPolicyVersion": { "type": "string", "maxLength": 120 }
+        "actionClass": {
+          "$ref": "#/$defs/actionClass",
+          "default": "IRREVERSIBLE_WRITE"
+        },
+        "mutationType": {
+          "$ref": "#/$defs/mutationType",
+          "default": "MERGE"
+        },
+        "entityClass": {
+          "$ref": "#/$defs/shortContext"
+        },
+        "observationDomain": {
+          "$ref": "#/$defs/shortContext"
+        },
+        "temporalScope": {
+          "$ref": "#/$defs/shortContext"
+        },
+        "domainPolicyVersion": {
+          "type": "string",
+          "maxLength": 120
+        }
       }
     }
   ]
