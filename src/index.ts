@@ -241,6 +241,115 @@ function createServer() {
   return server;
 }
 
+const ROBOTS_TXT = \`User-agent: *
+Allow: /
+Disallow: /mcp
+Disallow: /healthz
+
+Sitemap: https://mcp.danielberanek.cz/sitemap.xml
+\`;
+
+const SITEMAP_XML = \`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://mcp.danielberanek.cz/</loc>
+  </url>
+</urlset>
+\`;
+
+const LLMS_TXT = \`# DIO/ODI MCP
+
+> Public, stateless, read-only Model Context Protocol service exposing a bounded DIO/ODI Reference Model snapshot and selected derived Agentic Entity Resolution and Policy-as-Code integration mappings.
+
+## Service
+
+- Homepage: https://mcp.danielberanek.cz/
+- MCP endpoint: https://mcp.danielberanek.cz/mcp
+- Health: https://mcp.danielberanek.cz/healthz
+- Source repository: https://github.com/dan-beranek/dio-odi-mcp
+- README: https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md
+- API contract: https://github.com/dan-beranek/dio-odi-mcp/blob/main/docs/API-CONTRACT.md
+- Machine-readable MCP contract: https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract.json
+- Agentic ER merge-flow example: https://github.com/dan-beranek/dio-odi-mcp/blob/main/examples/agentic-er-merge-flow.md
+
+The service uses MCP Streamable HTTP at \`/mcp\`. MCP requests use HTTP POST. Opening \`/mcp\` in a browser is not a supported way to inspect the protocol endpoint; GET returns HTTP 405.
+
+## Purpose and capabilities
+
+The MCP service distributes versioned reference material for integrating applications. Its primary use case is an Agentic ER application retrieving a mutation-specific diagnostic profile for MERGE, SPLIT, or UNMERGE and using that material as one input to its own domain policy and local Supervisor.
+
+It exposes ten read-only tools:
+
+- \`get_mutation_guardrail_profile\`
+- \`get_reconstruction_failure_profile\`
+- \`get_evidence_promotion_contract\`
+- \`get_commit_boundary_contract\`
+- \`search_concepts\`
+- \`get_concept\`
+- \`get_relations\`
+- \`get_application_mapping\`
+- \`get_policy_as_code_mapping\`
+- \`get_reference_status\`
+
+It also exposes seven read-only resources:
+
+- \`dio-odi://reference/status\`
+- \`dio-odi://reference/vocabulary\`
+- \`dio-odi://diagnostics/reconstruction-failure-taxonomy\`
+- \`dio-odi://contracts/evidence-promotion\`
+- \`dio-odi://contracts/commit-boundary\`
+- \`dio-odi://mappings/agentic-er\`
+- \`dio-odi://mappings/policy-as-code\`
+
+One integration-planning prompt is available: \`plan_mutation_guardrail_integration\`.
+
+## Architectural boundaries
+
+DIO/ODI MCP is a reference and integration-data interface. It is not an MVDIO Supervisor and is not an authorization service.
+
+- It does not read an integrating application's graph, evidence stores, domain policy, promotion records, or snapshots.
+- It does not verify evidence or perform claim-specific evidence promotion.
+- It does not run application-side graph constraints or authorize Phase 1 / Phase 2 mutations.
+- It does not issue authorization tokens or return \`PASS\`, \`BREACH\`, or \`UNKNOWN_EVIDENCE\` verdicts.
+- It does not commit or revert writes in an integrating application.
+- Illustrative diagnostic-to-constraint mappings are examples, not universal or executable domain policies.
+
+The integrating application remains responsible for its domain policy, evidence validation and promotion, local Supervisor, version/snapshot validation, and protected persistence.
+
+## Reference data and versions
+
+The deployed software release is v0.1.1 (MIT-licensed implementation).
+
+The bundled reference metadata identifies:
+
+- DIO/ODI Reference Model archive: v0.9.0 — https://doi.org/10.5281/zenodo.24085589
+- Reference Vocabulary: v0.2.2 — https://vocab.danielberanek.cz/dio-odi/
+- Agentic ER architecture mapping: v0.3.1 — https://vocab.danielberanek.cz/mappings/agentic-er-architecture/
+- Policy-as-Code mapping: derived and non-normative — https://vocab.danielberanek.cz/mappings/commit-boundary-policy/
+- Live Semantic Change Feed metadata: v0.1.4, schema v0.2.1, 50 events through 2026-11-11.
+- Archived Reference Model v0.9.0 feed snapshot: v0.1.1, schema v0.2.0, 45 events through 2026-11-09.
+
+The live Semantic Change Feed is published separately at https://vocab.danielberanek.cz/semantic-change-feed/events.json. The MCP bundle contains its version/status metadata; it does not expose the complete feed as an MCP resource. The immutable Reference Model archive and the later live feed are distinct states. Live-feed updates do not modify the historical archive.
+
+The canonical Reference Vocabulary and derived application mappings are separate layers. Derived mappings do not redefine canonical concepts.
+
+## Discovery documents
+
+- Crawler rules: https://mcp.danielberanek.cz/robots.txt
+- Sitemap: https://mcp.danielberanek.cz/sitemap.xml
+- This LLM-oriented overview: https://mcp.danielberanek.cz/llms.txt
+
+## Licensing
+
+The software implementation is MIT-licensed. Embedded and adapted DIO/ODI reference content remains subject to CC BY 4.0. Attribution: https://github.com/dan-beranek/dio-odi-mcp/blob/main/data/ATTRIBUTION.md
+\`;
+
+const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string }> = {
+  "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
+  "/sitemap.xml": { content: SITEMAP_XML, contentType: "application/xml; charset=utf-8" },
+  "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" }
+};
+
 const HOME_PAGE_HTML = `<!doctype html>
 <html lang="en">
 <head>
@@ -251,6 +360,8 @@ const HOME_PAGE_HTML = `<!doctype html>
 <meta name="author" content="Daniel Beránek">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <link rel="canonical" href="https://mcp.danielberanek.cz/">
+<link rel="sitemap" type="application/xml" href="https://mcp.danielberanek.cz/sitemap.xml">
+<link rel="alternate" type="text/markdown" href="https://mcp.danielberanek.cz/llms.txt" title="LLM-readable service overview">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="DIO/ODI MCP">
@@ -431,6 +542,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <tr><th>Software</th><td>DIO/ODI MCP v__SERVICE_VERSION__ · <a href="https://doi.org/10.5281/zenodo.24123229">version DOI</a> · <a href="https://doi.org/10.5281/zenodo.24123228">Concept DOI</a></td></tr>
 <tr><th>Reference Model archive</th><td>v0.9.0 · <a href="https://doi.org/10.5281/zenodo.24085589">10.5281/zenodo.24085589</a></td></tr>
 <tr><th>Reference Vocabulary</th><td>v0.2.2 · <a href="https://vocab.danielberanek.cz/dio-odi/">Canonical SKOS vocabulary</a></td></tr>
+<tr><th>Live Semantic Change Feed</th><td>v0.1.4 · schema v0.2.1 · 50 events through 11 November 2026 · <a href="https://vocab.danielberanek.cz/semantic-change-feed/events.json">Live feed</a></td></tr>
 <tr><th>Agentic ER mapping</th><td>v0.3.1 · <a href="https://vocab.danielberanek.cz/mappings/agentic-er-architecture/">Derived architecture mapping</a></td></tr>
 <tr><th>Policy-as-Code mapping</th><td>Derived, non-normative · <a href="https://vocab.danielberanek.cz/mappings/commit-boundary-policy/">Mapping for OPA/Rego and Cedar</a></td></tr>
 <tr><th>Research paper</th><td><a href="https://arxiv.org/abs/2610.37407v2">Constraining the Commit Boundary (v2)</a></td></tr>
@@ -441,6 +553,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 </main>
 <footer class="site-footer">
 <p>Daniel Beránek · <a href="https://orcid.org/0009-0004-0050-0264">ORCID 0009-0004-0050-0264</a> · <a href="https://danielberanek.cz/manifest-dio/">DIO/ODI Hub</a></p>
+<p><a href="/llms.txt">LLM-readable overview</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">Crawler rules</a></p>
 <p><a href="https://github.com/dan-beranek/dio-odi-mcp">Source repository</a> · <a href="/healthz">Health status</a> · <a href="https://vocab.danielberanek.cz/">DIO/ODI Reference Model</a></p>
 <p>Software implementation: MIT · Embedded DIO/ODI reference content: CC BY 4.0</p>
 </footer>
@@ -499,6 +612,24 @@ export default {
     if (url.pathname === "/healthz" && (request.method === "GET" || request.method === "HEAD")) {
       const health = { status: "ok", service: "dio-odi-mcp", version: SERVICE_VERSION, mode: "read-only", referenceModel: REFERENCE_STATUS.referenceModel.archivedVersion, vocabulary: REFERENCE_STATUS.referenceVocabulary.version, mapping: REFERENCE_STATUS.applicationMappings.agenticEr.version };
       return request.method === "HEAD" ? new Response(null, { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } }) : jsonResponse(health);
+    }
+
+    const machineDocument = MACHINE_DOCUMENTS[url.pathname];
+    if (machineDocument) {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return jsonResponse({ error: "method_not_allowed", detail: "Use GET or HEAD for this static discovery document." }, 405, {
+          Allow: "GET, HEAD",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff"
+        });
+      }
+      return new Response(request.method === "HEAD" ? null : machineDocument.content, {
+        headers: {
+          "Content-Type": machineDocument.contentType,
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff"
+        }
+      });
     }
 
     if (url.pathname !== "/mcp") return jsonResponse({ error: "not_found" }, 404);
