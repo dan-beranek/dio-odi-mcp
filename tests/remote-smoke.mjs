@@ -4,7 +4,7 @@ import { performance } from "node:perf_hooks";
 
 const DEFAULT_BASE_URL = "https://mcp.danielberanek.cz";
 const PROTOCOL_VERSION = "2026-07-28";
-const EXPECTED_SERVICE_VERSION = "0.1.1";
+const EXPECTED_SERVICE_VERSION = "0.1.2";
 const CLIENT_INFO = { name: "dio-odi-mcp-production-smoke", version: "1.0.0" };
 const CLIENT_META = {
   "io.modelcontextprotocol/protocolVersion": PROTOCOL_VERSION,
@@ -398,7 +398,7 @@ await check("Mcp-Method mismatch is rejected", async () => {
 });
 
 await check("unsupported protocol version is rejected explicitly", async () => {
-  const { response, payload } = await rpc("server/discover", {}, { protocolVersion: "2025-06-18" });
+  const { response, payload } = await rpc("server/discover", {}, { protocolVersion: "2024-10-06" });
   assert.equal(response.status, 400);
   assert.equal(payload.error?.code, -32022);
   assert.ok(payload.error?.data?.supported?.includes(PROTOCOL_VERSION));

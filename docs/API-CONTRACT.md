@@ -1,6 +1,6 @@
-# MCP API contract — v0.1.0
+# MCP API contract — v0.1.1
 
-Protocol: MCP TypeScript SDK v2, MCP revision `2026-07-28`, Streamable HTTP, endpoint `/mcp`. The server rejects legacy protocol negotiation. The server is stateless and read-only. Inputs are validated by Zod and bounded in size. Tool results provide both JSON text content and `structuredContent`.
+Protocol: MCP TypeScript SDK v2, modern revision `2026-07-28` plus 2025-era legacy Streamable HTTP compatibility through `2025-11-25`, endpoint `/mcp`. Both lanes are stateless and read-only. The legacy lane supports ordinary tools, resources, and prompts but has no protocol sessions, standalone SSE, session recovery, or server-initiated sampling/elicitation. Inputs are validated by Zod and bounded in size. Tool results provide both JSON text content and `structuredContent`.
 
 ## Main tool: `get_mutation_guardrail_profile`
 

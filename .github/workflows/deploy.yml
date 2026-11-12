@@ -2,6 +2,16 @@ name: Deploy Cloudflare Worker
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.jsonc"
+      - "tests/remote-smoke.mjs"
+      - "tests/legacy-remote-smoke.mjs"
+      - ".github/workflows/deploy.yml"
 
 permissions:
   contents: read
@@ -22,3 +32,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+      - name: Verify modern and legacy protocol generations
+        run: npm run test:remote:all
