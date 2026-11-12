@@ -70,7 +70,7 @@ Application-owned systems remain outside this Worker:
   MVDIO Supervisor | version/snapshot checks | atomic persistence
 ```
 
-The Worker is stateless and read-only. It uses Cloudflare's `createMcpHandler` with the MCP TypeScript SDK v2 and accepts the stateless MCP `2026-07-28` protocol revision only (`legacy: "reject"`). It has no Durable Objects, database, KV namespace, external LLM API, or runtime dependency on the Reference Model site. The bundled snapshot keeps each request bounded and avoids a network subrequest for each tool call.
+The Worker is stateless and read-only. It uses Cloudflare's `createMcpHandler` with the MCP TypeScript SDK v2 and serves both modern MCP `2026-07-28` and legacy-era Streamable HTTP requests (through `2025-11-25`) in stateless compatibility mode (`legacy: "stateless"`). The legacy lane supports ordinary tools, resources, and prompts; it does not provide protocol sessions, standalone SSE, session recovery, or server-initiated sampling/elicitation. There are no Durable Objects, database, KV namespace, external LLM API, or runtime dependency on the Reference Model site. The bundled snapshot keeps each request bounded and avoids a network subrequest for each tool call.
 
 ## Tool inventory
 
@@ -112,7 +112,7 @@ npm run dev
 
 The local MCP endpoint is normally `http://localhost:8787/mcp`. The handler accepts native clients with no `Origin` header and checks browser `Origin` and request `Host` values against explicit allowlists. To add another browser-based client, update both `ALLOWED_ORIGINS` in `wrangler.jsonc` and `allowedOriginHostnames` in `src/index.ts`. Test it with:
 
-The MCP Inspector 2.14.0 was tested against the pinned MCP revision `2026-07-28` but could not negotiate that revision. Do not use that Inspector version as a compatibility or release gate. The official MCP TypeScript SDK compatibility check is available as `node tests/sdk-client.mjs` after installing the test client dependency; it pins the supported protocol revision and verifies tools, resources, and the integration prompt.
+The MCP Inspector 2.14.0 was tested against the pinned MCP revision `2026-07-28` but could not negotiate that revision. Do not use that Inspector version as a compatibility or release gate. The official MCP TypeScript SDK compatibility check is available as `node tests/sdk-client.mjs` after installing the test client dependency; it pins the modern protocol revision and verifies tools, resources, and the integration prompt. The remote smoke suites `npm run test:remote` and `npm run test:remote:legacy` exercise the modern and legacy stateless paths against the deployed endpoint.
 
 ## Deployment
 
@@ -159,7 +159,7 @@ Run the public production smoke suite against the deployed service:
 npm run test:remote
 ```
 
-The remote suite uses Node.js built-in `fetch` and the MCP `2026-07-28` Streamable HTTP request contract. It checks the service root and health endpoint, server discovery, all ten tools, all seven resources, the integration prompt, selected semantic invariants, HTTP method handling, CORS behavior, and protocol-header validation. It writes a machine-readable report to `test-results/production-smoke.json`.
+The modern remote suite uses Node.js built-in `fetch` and the MCP `2026-07-28` Streamable HTTP request contract. It checks the service root and health endpoint, server discovery, all ten tools, all seven resources, the integration prompt, selected semantic invariants, HTTP method handling, CORS behavior, and protocol-header validation. The companion legacy suite performs the `initialize` handshake at `2025-11-25`, confirms the absence of a session ID, and exercises all ten tools, seven resources, and the integration prompt. Run both with `npm run test:remote:all`.
 
 To target another deployment, set `MCP_BASE_URL` to its base URL before running the command. The suite is deliberately sequential and low-volume; it is not a load test and does not deliberately exhaust the configured rate limiter. A manual GitHub Actions workflow, **Production MCP Smoke Tests**, runs both the local checks and this public-endpoint suite and uploads the JSON report.
 
@@ -197,7 +197,7 @@ The concept index bundles 40 canonical concepts. The Agentic ER architecture ext
 
 ## Citation and archival metadata
 
-The software is versioned independently from the DIO/ODI Reference Model. `v0.1.0` was the initial public software release. `v0.1.1` republishes the same functional implementation with the complete, corrected archival metadata after enabling the Zenodo GitHub integration; it does not introduce a new MCP capability or change the read-only service behavior. The repository-level `.zenodo.json` is the authoritative Zenodo metadata projection, and `CITATION.cff` provides GitHub-native citation metadata. When both files are present, Zenodo uses `.zenodo.json` and ignores `CITATION.cff`. The canonical ordered keyword sequence is projected from the Reference Model registry's `mcp-server` work profile. Zenodo has archived v0.1.1 with the version DOI [10.5281/zenodo.24123229](https://doi.org/10.5281/zenodo.24123229); the Concept DOI for the software across versions is [10.5281/zenodo.24123228](https://doi.org/10.5281/zenodo.24123228). The version DOI identifies this exact release; use the Concept DOI when citing the software independently of a specific version.
+The software is versioned independently from the DIO/ODI Reference Model. `v0.1.0` was the initial public software release. `v0.1.1` republished the same functional implementation with corrected archival metadata. `v0.1.2` adds backward-compatible stateless Streamable HTTP support for 2025-era clients alongside modern MCP `2026-07-28`; it does not change tool schemas or the read-only service boundary. The repository-level `.zenodo.json` is the authoritative metadata projection for the next software archive, and `CITATION.cff` provides GitHub-native citation metadata. When both files are present, Zenodo uses `.zenodo.json` and ignores `CITATION.cff`. The canonical ordered keyword sequence is projected from the Reference Model registry's `mcp-server` work profile. Zenodo has archived v0.1.1 with the version DOI [10.5281/zenodo.24123229](https://doi.org/10.5281/zenodo.24123229); the Concept DOI for the software across versions is [10.5281/zenodo.24123228](https://doi.org/10.5281/zenodo.24123228). The v0.1.2 code update is not yet archived under a separate version DOI; use the Concept DOI when citing the software independently of a specific archived version.
 
 The Zenodo record uses MIT as the primary software license. This does not change the separate CC BY 4.0 license for embedded DIO/ODI content described below and in `data/ATTRIBUTION.md`.
 
