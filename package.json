@@ -1,6 +1,6 @@
 {
   "name": "dio-odi-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "type": "module",
   "description": "Read-only MCP server exposing the DIO/ODI Reference Model and derived Agentic ER guardrail mappings.",
@@ -14,7 +14,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test",
     "check": "npm run typecheck && npm test",
-    "test:remote": "node tests/remote-smoke.mjs"
+    "test:remote": "node tests/remote-smoke.mjs",
+    "test:remote:legacy": "node tests/legacy-remote-smoke.mjs",
+    "test:remote:all": "npm run test:remote && npm run test:remote:legacy"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
