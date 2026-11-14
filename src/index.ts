@@ -333,6 +333,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <a href="https://vocab.danielberanek.cz/" aria-label="DIO/ODI Reference Model home">DIO/ODI Reference Model</a>
 <a href="https://vocab.danielberanek.cz/dio-odi/">Reference Vocabulary</a>
 <a href="https://vocab.danielberanek.cz/mappings/">Application Mappings</a>
+<a href="https://vocab.danielberanek.cz/external-reception/">External Reception</a>
 <a href="https://mcp.danielberanek.cz/" aria-current="page">MCP</a>
 <a href="#tools">Tools</a>
 <a href="https://github.com/dan-beranek/dio-odi-mcp">Source repository</a>
