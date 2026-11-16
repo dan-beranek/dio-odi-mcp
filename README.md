@@ -14,6 +14,10 @@ A public, read-only Model Context Protocol server for the DIO/ODI Reference Mode
 - Source paper: <https://arxiv.org/abs/2610.37407v2>
 - Agentic ER architecture mapping: <https://vocab.danielberanek.cz/mappings/agentic-er-architecture/>
 
+## Related published planning product
+
+[Agentic Entity Resolution Guardrail Planner](https://www.agensi.io/r/DANIELBERANEK?to=/skills/agentic-entity-resolution-guardrail-planner) is a separate design-time Agent Skill for preparing reviewable engineering plans for identity-changing operations. In reference-backed mode, the product can use this public read-only MCP as an optional source of canonical concepts and mutation-specific guardrail profiles. The Skill does not execute mutations or authorize production writes, and this MCP does not receive customer records or perform application-side authorization.
+
 ## What it does
 
 The main tool, `get_mutation_guardrail_profile`, returns a bounded profile for an action class (`READ`, `STAGE_LOCAL`, `REVERSIBLE_WRITE`, `IRREVERSIBLE_WRITE`) and mutation type (`MERGE`, `SPLIT`, `UNMERGE`, `OTHER`). A typical call for a protected corporate-entity merge supplies the action/mutation class, entity class, observation domain, temporal scope, and current domain-policy version. It returns:
