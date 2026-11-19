@@ -13,7 +13,7 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "test": "node --test",
-    "check": "npm run typecheck && npm run metadata:check && npm test",
+    "check": "npm run typecheck && npm run metadata:check && node --check tests/remote-smoke.mjs && node --check tests/legacy-remote-smoke.mjs && npm test",
     "test:remote": "node tests/remote-smoke.mjs",
     "test:remote:legacy": "node tests/legacy-remote-smoke.mjs",
     "test:remote:all": "npm run test:remote && npm run test:remote:legacy",
