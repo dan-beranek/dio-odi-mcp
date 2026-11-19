@@ -13,10 +13,12 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "test": "node --test",
-    "check": "npm run typecheck && npm test",
+    "check": "npm run typecheck && npm run metadata:check && npm test",
     "test:remote": "node tests/remote-smoke.mjs",
     "test:remote:legacy": "node tests/legacy-remote-smoke.mjs",
-    "test:remote:all": "npm run test:remote && npm run test:remote:legacy"
+    "test:remote:all": "npm run test:remote && npm run test:remote:legacy",
+    "metadata:write": "node scripts/generate-page-metadata.mjs --write",
+    "metadata:check": "node scripts/generate-page-metadata.mjs --check"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
