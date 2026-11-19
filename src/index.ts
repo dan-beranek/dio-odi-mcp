@@ -1,5 +1,6 @@
 import packageJson from "../package.json";
 import { LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
+import PAGE_METADATA from "./page-metadata.json";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
 import { createMcpHandler } from "agents/mcp/server";
@@ -28,6 +29,24 @@ interface Env {
 }
 
 const SERVICE_VERSION = packageJson.version;
+const PAGE_PROFILE = PAGE_METADATA.artifacts[0];
+if (!PAGE_PROFILE || PAGE_METADATA.artifacts.length !== 1) throw new Error("Expected exactly one canonical MCP homepage metadata profile");
+const PAGE_KEYWORDS = PAGE_PROFILE.resolved_keywords;
+const PAGE_PROFILE_ID = PAGE_PROFILE.profile_id;
+const PAGE_REGISTRY_VERSION = PAGE_METADATA.keyword_registry.registry_version;
+
+function escapeHtmlAttribute(value: string): string {
+  return value.replaceAll("&", "&amp;").replaceAll(String.fromCharCode(34), "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+function renderHomePage(): string {
+  return HOME_PAGE_HTML
+    .replaceAll("__SERVICE_VERSION__", SERVICE_VERSION)
+    .replace("__PAGE_KEYWORDS_HTML__", escapeHtmlAttribute(PAGE_KEYWORDS.join(", ")))
+    .replace("__PAGE_PROFILE_ID__", escapeHtmlAttribute(PAGE_PROFILE_ID))
+    .replace("__PAGE_REGISTRY_VERSION__", escapeHtmlAttribute(PAGE_REGISTRY_VERSION))
+    .replace("__PAGE_KEYWORDS_JSON__", JSON.stringify(PAGE_KEYWORDS));
+}
 
 const FAILURE_MODE_IDS = [
   "EntitySubstitution", "MergeFailure", "SplitFailure", "EntityOmission",
@@ -242,10 +261,11 @@ function createServer() {
   return server;
 }
 
-const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string }> = {
+const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string; headers?: Record<string, string> }> = {
   "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
   "/sitemap.xml": { content: SITEMAP_XML, contentType: "application/xml; charset=utf-8" },
-  "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" }
+  "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" },
+  "/resolved-page-metadata.json": { content: JSON.stringify(PAGE_METADATA, null, 2) + "\n", contentType: "application/json; charset=utf-8", headers: { "X-Robots-Tag": "noindex" } }
 };
 
 const HOME_PAGE_HTML = `<!doctype html>
@@ -256,6 +276,10 @@ const HOME_PAGE_HTML = `<!doctype html>
 <title>DIO/ODI MCP v__SERVICE_VERSION__ | Read-only Model Context Protocol service</title>
 <meta name="description" content="Public, stateless, read-only Model Context Protocol interface to the DIO/ODI Reference Model and selected Agentic ER and Policy-as-Code mappings.">
 <meta name="author" content="Daniel Beránek">
+<meta name="keywords" content="__PAGE_KEYWORDS_HTML__">
+<meta name="dio-odi-keyword-profile-id" content="__PAGE_PROFILE_ID__">
+<meta name="dio-odi-keyword-registry-version" content="__PAGE_REGISTRY_VERSION__">
+<link rel="describedby" type="application/json" href="/resolved-page-metadata.json">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <link rel="canonical" href="https://mcp.danielberanek.cz/">
 <link rel="sitemap" type="application/xml" href="https://mcp.danielberanek.cz/sitemap.xml">
@@ -325,7 +349,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://mcp.danielberanek.cz/#website","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","inLanguage":"en","isPartOf":{"@id":"https://vocab.danielberanek.cz/#website"}},{"@type":"WebPage","@id":"https://mcp.danielberanek.cz/#webpage","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","description":"Public, stateless, read-only MCP interface to versioned DIO/ODI reference data and selected derived mappings.","inLanguage":"en","isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"},"about":{"@id":"https://vocab.danielberanek.cz/dio-odi/#ReferenceVocabulary"}},{"@type":"SoftwareApplication","@id":"https://mcp.danielberanek.cz/#software","name":"DIO/ODI MCP","applicationCategory":"DeveloperApplication","operatingSystem":"Any","softwareVersion":"__SERVICE_VERSION__","url":"https://mcp.danielberanek.cz/","codeRepository":"https://github.com/dan-beranek/dio-odi-mcp","sameAs":["https://doi.org/10.5281/zenodo.24123229","https://doi.org/10.5281/zenodo.24123228"],"provider":{"@id":"https://danielberanek.cz/#person"}},{"@type":"Person","@id":"https://danielberanek.cz/#person","name":"Daniel Beránek","url":"https://danielberanek.cz/","sameAs":"https://orcid.org/0009-0004-0050-0264"}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://mcp.danielberanek.cz/#website","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","inLanguage":"en","isPartOf":{"@id":"https://vocab.danielberanek.cz/#website"}},{"@type":"WebPage","@id":"https://mcp.danielberanek.cz/#webpage","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","description":"Public, stateless, read-only MCP interface to versioned DIO/ODI reference data and selected derived mappings.","inLanguage":"en","isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"},"about":{"@id":"https://vocab.danielberanek.cz/dio-odi/#ReferenceVocabulary"},"keywords":__PAGE_KEYWORDS_JSON__},{"@type":"SoftwareApplication","@id":"https://mcp.danielberanek.cz/#software","name":"DIO/ODI MCP","applicationCategory":"DeveloperApplication","operatingSystem":"Any","softwareVersion":"__SERVICE_VERSION__","url":"https://mcp.danielberanek.cz/","codeRepository":"https://github.com/dan-beranek/dio-odi-mcp","sameAs":["https://doi.org/10.5281/zenodo.24123229","https://doi.org/10.5281/zenodo.24123228"],"provider":{"@id":"https://danielberanek.cz/#person"}},{"@type":"Person","@id":"https://danielberanek.cz/#person","name":"Daniel Beránek","url":"https://danielberanek.cz/","sameAs":"https://orcid.org/0009-0004-0050-0264"}]}
 </script>
 </head>
 <body>
@@ -503,7 +527,7 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/" && request.method === "GET") {
-      return new Response(HOME_PAGE_HTML.replaceAll("__SERVICE_VERSION__", SERVICE_VERSION), {
+      return new Response(renderHomePage(), {
         headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
       });
     }
@@ -519,7 +543,8 @@ export default {
         return jsonResponse({ error: "method_not_allowed", detail: "Use GET or HEAD for this static discovery document." }, 405, {
           Allow: "GET, HEAD",
           "Cache-Control": "no-store",
-          "X-Content-Type-Options": "nosniff"
+          "X-Content-Type-Options": "nosniff",
+          ...(machineDocument.headers ?? {})
         });
       }
       return new Response(request.method === "HEAD" ? null : machineDocument.content, {
