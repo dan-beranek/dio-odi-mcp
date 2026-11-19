@@ -265,7 +265,6 @@ const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string; 
   "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
   "/sitemap.xml": { content: SITEMAP_XML, contentType: "application/xml; charset=utf-8" },
   "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" },
-  "/resolved-page-metadata.json": { content: JSON.stringify(PAGE_METADATA, null, 2) + "\n", contentType: "application/json; charset=utf-8", headers: { "X-Robots-Tag": "noindex" } }
 };
 
 const HOME_PAGE_HTML = `<!doctype html>
@@ -535,6 +534,25 @@ export default {
     if (url.pathname === "/healthz" && (request.method === "GET" || request.method === "HEAD")) {
       const health = { status: "ok", service: "dio-odi-mcp", version: SERVICE_VERSION, mode: "read-only", referenceModel: REFERENCE_STATUS.referenceModel.archivedVersion, vocabulary: REFERENCE_STATUS.referenceVocabulary.version, mapping: REFERENCE_STATUS.applicationMappings.agenticEr.version };
       return request.method === "HEAD" ? new Response(null, { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } }) : jsonResponse(health);
+    }
+
+    if (url.pathname === "/resolved-page-metadata.json") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return jsonResponse({ error: "method_not_allowed", detail: "Use GET or HEAD for the resolved homepage metadata manifest." }, 405, {
+          Allow: "GET, HEAD",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff",
+          "X-Robots-Tag": "noindex"
+        });
+      }
+      return new Response(request.method === "HEAD" ? null : JSON.stringify(PAGE_METADATA, null, 2) + "\n", {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff",
+          "X-Robots-Tag": "noindex"
+        }
+      });
     }
 
     const machineDocument = MACHINE_DOCUMENTS[url.pathname];
