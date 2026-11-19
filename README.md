@@ -10,6 +10,7 @@ A public, read-only Model Context Protocol server for the DIO/ODI Reference Mode
 - LLM-readable overview: `https://mcp.danielberanek.cz/llms.txt`
 - Sitemap: `https://mcp.danielberanek.cz/sitemap.xml`
 - Crawler rules: `https://mcp.danielberanek.cz/robots.txt`
+- Resolved homepage keyword metadata: `https://mcp.danielberanek.cz/resolved-page-metadata.json` (canonical profile `dio-odi-mcp-home`)
 - Canonical Reference Model: <https://vocab.danielberanek.cz/>
 - Source paper: <https://arxiv.org/abs/2610.37407v2>
 - Agentic ER architecture mapping: <https://vocab.danielberanek.cz/mappings/agentic-er-architecture/>
@@ -52,7 +53,7 @@ The service root is a single human-readable landing page. Its crawler and machin
 - `/sitemap.xml` lists the canonical homepage only; protocol and health endpoints are not indexable website pages.
 - `/llms.txt` provides a concise service overview, endpoint guidance, tool/resource inventory, version context, and architectural boundaries.
 
-The full technical definitions remain in the API contract, machine-readable contract, and examples linked above. There is intentionally no separate `llms-full.txt`.
+The resolved metadata manifest describes the single human-readable homepage and is linked from its HTML head. It does not describe the MCP protocol or health endpoints as webpages. The full technical definitions remain in the API contract, machine-readable contract, and examples linked above. There is intentionally no separate `llms-full.txt`.
 
 ## Architecture
 
@@ -135,7 +136,7 @@ Cloudflare Custom Domains create the DNS record and certificate for the Worker w
 
 ### GitHub Actions deployment
 
-The workflow `.github/workflows/deploy.yml` is triggered manually through `workflow_dispatch`. A merge into `main` does not deploy the Worker automatically. Add these GitHub repository secrets:
+The workflow `.github/workflows/deploy.yml` deploys automatically on pushes to `main` that change Worker source, generated page metadata, its registry snapshot/generator, configuration, smoke tests, or the workflow itself. It can also be triggered manually through `workflow_dispatch`. Add these GitHub repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
