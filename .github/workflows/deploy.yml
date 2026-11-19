@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "src/**"
+      - "metadata/**"
+      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - "wrangler.jsonc"
