@@ -159,6 +159,36 @@ await check("service root is reachable", async () => {
   assert.match(html, /href="https:\/\/mcp\.danielberanek\.cz\/llms\.txt"/);
 });
 
+await check("homepage publishes the canonical registry-driven page profile", async () => {
+  const response = await fetch(urls.root, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /name="dio-odi-keyword-profile-id" content="dio-odi-mcp-home"/);
+  assert.match(html, /name="dio-odi-keyword-registry-version" content="2\.11\.0"/);
+  assert.doesNotMatch(html, /__PAGE_(?:KEYWORDS|PROFILE|REGISTRY)/);
+  const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+  assert.ok(jsonLdMatch, "Expected homepage JSON-LD");
+  const graph = JSON.parse(jsonLdMatch[1])["@graph"];
+  const webpage = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#webpage");
+  assert.ok(webpage, "Expected the canonical WebPage node");
+  const metadataResponse = await fetch(\`\${urls.origin}/resolved-page-metadata.json\`, { signal: AbortSignal.timeout(15000) });
+  assert.equal(metadataResponse.status, 200);
+  assert.match(metadataResponse.headers.get("content-type") ?? "", /application\/json/i);
+  assert.equal(metadataResponse.headers.get("x-robots-tag"), "noindex");
+  const manifest = await metadataResponse.json();
+  assert.equal(manifest.keyword_registry.registry_version, "2.11.0");
+  const profile = manifest.artifacts.find((item) => item.profile_id === "dio-odi-mcp-home");
+  assert.ok(profile, "Expected the canonical MCP homepage profile in the manifest");
+  assert.deepEqual(webpage.keywords, profile.resolved_keywords);
+  assert.ok(html.includes(\`<meta name="keywords" content="\${profile.resolved_keywords.join(", ")}">\`));
+  assert.deepEqual(profile.page, {
+    page_key: "service-home",
+    path: "/",
+    url: "https://mcp.danielberanek.cz/",
+    entity_id: "https://mcp.danielberanek.cz/#webpage"
+  });
+});
+
 await check("robots.txt publishes crawler rules and sitemap location", async () => {
   const response = await fetch(urls.robots, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
