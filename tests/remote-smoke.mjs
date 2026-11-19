@@ -171,11 +171,14 @@ await check("homepage publishes the canonical registry-driven page profile", asy
   const graph = JSON.parse(jsonLdMatch[1])["@graph"];
   const webpage = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#webpage");
   assert.ok(webpage, "Expected the canonical WebPage node");
-  const metadataResponse = await fetch(urls.origin + "/resolved-page-metadata.json", { signal: AbortSignal.timeout(15000) });
-  assert.equal(metadataResponse.status, 200);
+
+  const metadataUrl = urls.origin + "/resolved-page-metadata.json";
+  const metadataResponse = await fetch(metadataUrl, { signal: AbortSignal.timeout(15000) });
+  const metadataBody = await metadataResponse.text();
+  assert.equal(metadataResponse.status, 200, \`Metadata manifest request \${metadataUrl} returned HTTP \${metadataResponse.status}: \${metadataBody.slice(0, 300)}\`);
   assert.match(metadataResponse.headers.get("content-type") ?? "", /application\/json/i);
   assert.equal(metadataResponse.headers.get("x-robots-tag"), "noindex");
-  const manifest = await metadataResponse.json();
+  const manifest = JSON.parse(metadataBody);
   assert.equal(manifest.keyword_registry.registry_version, "2.11.0");
   const profile = manifest.artifacts.find((item) => item.profile_id === "dio-odi-mcp-home");
   assert.ok(profile, "Expected the canonical MCP homepage profile in the manifest");
