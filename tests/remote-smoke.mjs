@@ -175,7 +175,7 @@ await check("homepage publishes the canonical registry-driven page profile", asy
   const metadataUrl = urls.origin + "/resolved-page-metadata.json";
   const metadataResponse = await fetch(metadataUrl, { signal: AbortSignal.timeout(15000) });
   const metadataBody = await metadataResponse.text();
-  assert.equal(metadataResponse.status, 200, \`Metadata manifest request \${metadataUrl} returned HTTP \${metadataResponse.status}: \${metadataBody.slice(0, 300)}\`);
+  assert.equal(metadataResponse.status, 200, "Metadata manifest request " + metadataUrl + " returned HTTP " + metadataResponse.status + ": " + metadataBody.slice(0, 300));
   assert.match(metadataResponse.headers.get("content-type") ?? "", /application\/json/i);
   assert.equal(metadataResponse.headers.get("x-robots-tag"), "noindex");
   const manifest = JSON.parse(metadataBody);
