@@ -52,6 +52,12 @@ The service root is a single human-readable landing page. Its crawler and machin
 - `/robots.txt` allows public documentation crawling, excludes the protocol and health endpoints, and points to the sitemap.
 - `/sitemap.xml` lists the canonical homepage only; protocol and health endpoints are not indexable website pages.
 - `/llms.txt` provides a concise service overview, endpoint guidance, tool/resource inventory, version context, and architectural boundaries.
+- `/mcp/server-card` serves a static Server Card describing the Streamable HTTP endpoint. It follows the experimental MCP Server Card profile (SEP-2127), which is not yet an accepted or official MCP extension.
+- The service homepage advertises two separate domain-level discovery manifests hosted by the canonical Reference Model:
+  - ARD v0.91: https://vocab.danielberanek.cz/.well-known/ard.json
+  - Common AI Catalog v0.9: https://vocab.danielberanek.cz/.well-known/ai-catalog.json
+
+ARD v0.91 is a proposal and Common AI Catalog v0.9 is a release candidate for v1.0. The manifests are separate representations, not aliases. The Server Card is protocol-specific connection metadata; it does not enumerate the live MCP tools, resources, or prompts, which remain discoverable through MCP at runtime. The card is advisory and does not establish trust, grant authorization, or change the service's read-only boundary.
 
 The resolved metadata manifest describes the single human-readable homepage and is linked from its HTML head. It does not describe the MCP protocol or health endpoints as webpages. The full technical definitions remain in the API contract, machine-readable contract, and examples linked above. There is intentionally no separate `llms-full.txt`.
 
