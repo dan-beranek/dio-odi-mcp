@@ -176,6 +176,19 @@ await check("homepage publishes the canonical registry-driven page profile", asy
   const graph = JSON.parse(jsonLdMatch[1])["@graph"];
   const webpage = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#webpage");
   assert.ok(webpage, "Expected the canonical WebPage node");
+  const person = graph.find((node) => node["@id"] === "https://danielberanek.cz/#person");
+  assert.ok(person && person["@type"] === "Person", "Expected the canonical Person node");
+  assert.equal(person.url, "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/");
+  assert.equal(person.mainEntityOfPage?.["@id"], "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/#profilepage");
+  const api = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#webapi");
+  assert.ok(api && api["@type"] === "WebAPI", "Expected a separate WebAPI entity");
+  assert.equal(api.url, urls.mcp);
+  assert.equal(api.mainEntityOfPage?.["@id"], webpage["@id"]);
+  assert.equal(api.provider?.["@id"], person["@id"]);
+  assert.equal(webpage.mainEntity?.["@id"], api["@id"]);
+  const software = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#software");
+  assert.ok(software && software["@type"] === "SoftwareApplication", "Expected a distinct software implementation entity");
+  assert.equal(software.provider?.["@id"], person["@id"]);
 
   const metadataUrl = urls.origin + "/resolved-page-metadata.json";
   const metadataResponse = await fetch(metadataUrl, { signal: AbortSignal.timeout(15000) });
