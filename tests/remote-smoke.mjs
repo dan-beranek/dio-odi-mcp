@@ -224,7 +224,7 @@ await check("RFC 9727 API Catalog describes the MCP endpoint and linked resource
   assert.ok(Array.isArray(linkset.linkset));
   const api = linkset.linkset.find((item) => item.anchor === urls.mcp);
   assert.ok(api, "Expected the catalog to identify the public MCP endpoint");
-  assert.equal(api["service-desc"]?.[0]?.href, urls.origin + "/schemas/mcp-contract.json");
+  assert.equal(api["service-desc"]?.[0]?.href, urls.origin + "/schemas/mcp-contract-v0.1.1.json");
   assert.equal(api["service-desc"]?.[0]?.type, "application/json");
   assert.equal(api["service-doc"]?.[0]?.href, urls.origin + "/#tools");
   assert.equal(api["service-meta"]?.[0]?.href, urls.serverCard);
