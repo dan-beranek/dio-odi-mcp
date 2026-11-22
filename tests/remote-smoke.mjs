@@ -287,7 +287,7 @@ await check("public Server Card describes the matching Streamable HTTP service",
 
   const head = await fetch(urls.serverCard, { method: "HEAD", signal: AbortSignal.timeout(15000) });
   assert.equal(head.status, 200);
-  assert.ok((head.headers.get("content-type") ?? "").includes("application/linkset+json"));
+  assert.ok((head.headers.get("content-type") ?? "").includes("application/mcp-server-card+json"));
 });
 
 await check("health endpoint reports expected service and versions", async () => {
