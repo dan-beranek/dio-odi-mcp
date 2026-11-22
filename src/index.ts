@@ -72,7 +72,7 @@ function jsonResult(value: unknown) {
 function createServer() {
     const server = new McpServer(
     {
-      name: "dio-odi-mcp",
+      name: "cz.danielberanek/dio-odi-mcp",
       version: SERVICE_VERSION
     },
     {
@@ -282,6 +282,8 @@ const HOME_PAGE_HTML = `<!doctype html>
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <link rel="canonical" href="https://mcp.danielberanek.cz/">
 <link rel="sitemap" type="application/xml" href="https://mcp.danielberanek.cz/sitemap.xml">
+<link rel="ard" type="application/json" href="https://vocab.danielberanek.cz/.well-known/ard.json">
+<link rel="ai-catalog" type="application/ai-catalog+json" href="https://vocab.danielberanek.cz/.well-known/ai-catalog.json">
 <link rel="alternate" type="text/markdown" href="https://mcp.danielberanek.cz/llms.txt" title="LLM-readable service overview">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
@@ -534,6 +536,48 @@ export default {
     if (url.pathname === "/healthz" && (request.method === "GET" || request.method === "HEAD")) {
       const health = { status: "ok", service: "dio-odi-mcp", version: SERVICE_VERSION, mode: "read-only", referenceModel: REFERENCE_STATUS.referenceModel.archivedVersion, vocabulary: REFERENCE_STATUS.referenceVocabulary.version, mapping: REFERENCE_STATUS.applicationMappings.agenticEr.version };
       return request.method === "HEAD" ? new Response(null, { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } }) : jsonResponse(health);
+    }
+
+    if (url.pathname === "/mcp/server-card") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return new Response(JSON.stringify({ error: "method_not_allowed", detail: "Use GET or HEAD to retrieve the MCP Server Card." }), {
+          status: 405,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            Allow: "GET, HEAD",
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff"
+          }
+        });
+      }
+
+      const card = {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+        name: "cz.danielberanek/dio-odi-mcp",
+        title: "DIO/ODI MCP Reference Service",
+        description: "Public, stateless, read-only MCP Streamable HTTP service exposing the DIO/ODI Reference Model, canonical SKOS vocabulary, and selected derived Agentic ER and Policy-as-Code reference mappings. It does not access integrating applications, validate evidence, authorize mutations, or execute production writes.",
+        version: SERVICE_VERSION,
+        websiteUrl: "https://mcp.danielberanek.cz/",
+        repository: {
+          source: "github",
+          url: "https://github.com/dan-beranek/dio-odi-mcp"
+        },
+        remotes: [
+          {
+            type: "streamable-http",
+            url: "https://mcp.danielberanek.cz/mcp",
+            supportedProtocolVersions: ["2026-07-28", "2025-11-25"]
+          }
+        ]
+      };
+
+      return new Response(request.method === "HEAD" ? null : JSON.stringify(card, null, 2) + "\n", {
+        headers: {
+          "Content-Type": "application/mcp-server-card+json; charset=utf-8",
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff"
+        }
+      });
     }
 
     if (url.pathname === "/resolved-page-metadata.json") {
