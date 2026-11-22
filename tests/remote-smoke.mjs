@@ -157,6 +157,8 @@ await check("service root is reachable", async () => {
   assert.match(html, /Live Semantic Change Feed/);
   assert.match(html, /v0\.1\.4/);
   assert.match(html, /rel="sitemap"/);
+  assert.ok(html.includes('rel="api-catalog"') && html.includes("https://mcp.danielberanek.cz/.well-known/api-catalog"));
+  assert.match(response.headers.get("link") ?? "", /rel="?api-catalog"?/i);
   assert.match(html, /href="https:\/\/mcp\.danielberanek\.cz\/llms\.txt"/);
   assert.ok(html.includes('rel="ard"') && html.includes("https://vocab.danielberanek.cz/.well-known/ard.json"));
   assert.ok(html.includes('rel="ai-catalog"') && html.includes("https://vocab.danielberanek.cz/.well-known/ai-catalog.json"));
@@ -208,6 +210,42 @@ await check("robots.txt publishes crawler rules and sitemap location", async () 
   assert.match(body, /^Agentmap: https:\/\/vocab\.danielberanek\.cz\/\.well-known\/ard\.json$/m);
   assert.match(body, /^Disallow: \/healthz$/m);
   assert.match(body, /^Sitemap: https:\/\/mcp\.danielberanek\.cz\/sitemap\.xml$/m);
+});
+
+await check("RFC 9727 API Catalog describes the MCP endpoint and linked resources", async () => {
+  const catalogUrl = urls.origin + "/.well-known/api-catalog";
+  const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  const contentType = response.headers.get("content-type") ?? "";
+  assert.match(contentType, /application\\/linkset\\+json/i);
+  assert.match(contentType, /profile="https:\\/\\/www\\.rfc-editor\\.org\\/info\\/rfc9727"/i);
+
+  const linkset = await response.json();
+  assert.ok(Array.isArray(linkset.linkset));
+  const api = linkset.linkset.find((item) => item.anchor === urls.mcp);
+  assert.ok(api, "Expected the catalog to identify the public MCP endpoint");
+  assert.equal(api["service-desc"]?.[0]?.href, urls.origin + "/schemas/mcp-contract.json");
+  assert.equal(api["service-desc"]?.[0]?.type, "application/json");
+  assert.equal(api["service-doc"]?.[0]?.href, urls.origin + "/#tools");
+  assert.equal(api["service-meta"]?.[0]?.href, urls.serverCard);
+  assert.equal(api.status?.[0]?.href, urls.health);
+
+  const head = await fetch(catalogUrl, { method: "HEAD", signal: AbortSignal.timeout(15000) });
+  assert.equal(head.status, 200);
+  assert.match(head.headers.get("content-type") ?? "", /application\\/linkset\\+json/i);
+  assert.match(head.headers.get("link") ?? "", /rel="?api-catalog"?/i);
+
+  const contractResponse = await fetch(api["service-desc"][0].href, { signal: AbortSignal.timeout(15000) });
+  assert.equal(contractResponse.status, 200);
+  assert.match(contractResponse.headers.get("content-type") ?? "", /application\\/json/i);
+  const contract = await contractResponse.json();
+  assert.equal(contract.protocol?.name, "Model Context Protocol");
+  assert.equal(contract.protocol?.endpoint, "/mcp");
+  assert.equal(contract.protocol?.readOnly, true);
+
+  const cardResponse = await fetch(api["service-meta"][0].href, { signal: AbortSignal.timeout(15000) });
+  assert.equal(cardResponse.status, 200);
+  assert.match(cardResponse.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
 });
 
 await check("sitemap.xml lists the canonical homepage only", async () => {
