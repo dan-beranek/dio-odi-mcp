@@ -237,7 +237,7 @@ await check("llms.txt describes the MCP endpoint and its architectural boundarie
 await check("public Server Card describes the matching Streamable HTTP service", async () => {
   const response = await fetch(urls.serverCard, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
+  assert.match(response.headers.get("content-type") ?? "", /application\/mcp-server-card\+json/i);
   const card = await response.json();
   assert.equal(card.$schema, "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json");
   assert.equal(card.name, "cz.danielberanek/dio-odi-mcp");
@@ -248,7 +248,7 @@ await check("public Server Card describes the matching Streamable HTTP service",
 
   const head = await fetch(urls.serverCard, { method: "HEAD", signal: AbortSignal.timeout(15000) });
   assert.equal(head.status, 200);
-  assert.match(head.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
+  assert.match(head.headers.get("content-type") ?? "", /application\/mcp-server-card\+json/i);
 });
 
 await check("health endpoint reports expected service and versions", async () => {
