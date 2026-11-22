@@ -15,6 +15,23 @@ const PROFILE_ID = "dio-odi-mcp-home";
 const REGISTRY_URL = "https://raw.githubusercontent.com/dan-beranek/dio-odi-reference-model/main/metadata/keywords.json";
 const SNAPSHOT = resolve(ROOT, "metadata/keyword-registry.snapshot.json");
 const OUTPUT = resolve(ROOT, "src/page-metadata.json");
+const ENTITY_LOCK_PATH = resolve(ROOT, "metadata/entity-registry.lock.json");
+const ENTITY_SNAPSHOT_PATH = resolve(ROOT, "metadata/entity-registry.snapshot.json");
+const ENTITY_LOCK = JSON.parse(await readFile(ENTITY_LOCK_PATH, "utf8"));
+const ENTITY_REGISTRY = JSON.parse(await readFile(ENTITY_SNAPSHOT_PATH, "utf8"));
+if (ENTITY_REGISTRY.status !== "canonical-approved" ||
+    ENTITY_REGISTRY.registry_version !== ENTITY_LOCK.registry_version ||
+    !/^[0-9a-f]{40}$/.test(ENTITY_LOCK.registry_commit ?? "")) {
+  throw new Error("Pinned Entity Registry is missing, unapproved, or inconsistent with its lock.");
+}
+function requiredEntity(key) {
+  const entity = ENTITY_REGISTRY.entities.find((item) => item.key === key && item.status === "active");
+  if (!entity) throw new Error("Missing active Entity Registry identity: " + key);
+  return entity;
+}
+const PERSON_ENTITY = requiredEntity("person-daniel-beranek");
+const MCP_API_ENTITY = requiredEntity("service-dio-odi-mcp-api");
+const MCP_SOFTWARE_ENTITY = requiredEntity("software-dio-odi-mcp");
 const CHUNK_ORDER = [
   "C0_identity_invariant", "C1_reconstruction_environments", "C2_work_positioning",
   "C3_reconstruction_mechanics", "C4_k6", "C5_failures_robustness",
@@ -117,8 +134,32 @@ function build(raw) {
     term_rationales: profile.term_rationales
   };
   return {
-    schema_version: "1.0.0",
+    schema_version: "1.1.0",
     site: { repository: REPOSITORY, origin: "https://mcp.danielberanek.cz/" },
+    entity_registry: {
+      repository: ENTITY_LOCK.registry_repository,
+      version: ENTITY_REGISTRY.registry_version,
+      commit: ENTITY_LOCK.registry_commit,
+      source_url: "https://raw.githubusercontent.com/" + ENTITY_LOCK.registry_repository + "/" + ENTITY_LOCK.registry_commit + "/" + ENTITY_LOCK.source_path,
+      snapshot_path: ENTITY_LOCK.snapshot_path,
+      person: {
+        id: PERSON_ENTITY["@id"],
+        name: PERSON_ENTITY.name,
+        url: PERSON_ENTITY.url,
+        same_as: PERSON_ENTITY.sameAs ?? []
+      },
+      service_api: {
+        id: MCP_API_ENTITY["@id"],
+        name: MCP_API_ENTITY.name,
+        url: MCP_API_ENTITY.url,
+        landing_page: MCP_API_ENTITY.landing_page
+      },
+      service_software: {
+        id: MCP_SOFTWARE_ENTITY["@id"],
+        name: MCP_SOFTWARE_ENTITY.name,
+        url: MCP_SOFTWARE_ENTITY.url
+      }
+    },
     keyword_registry: {
       repository: "dan-beranek/dio-odi-reference-model",
       path: "metadata/keywords.json",

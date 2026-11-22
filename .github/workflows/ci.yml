@@ -18,4 +18,6 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --no-audit --no-fund
+      - name: Verify pinned Entity Registry snapshot
+        run: node scripts/verify-entity-registry.mjs
       - run: npm run check

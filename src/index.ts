@@ -35,6 +35,41 @@ if (!PAGE_PROFILE || PAGE_METADATA.artifacts.length !== 1) throw new Error("Expe
 const PAGE_KEYWORDS = PAGE_PROFILE.resolved_keywords;
 const PAGE_PROFILE_ID = PAGE_PROFILE.profile_id;
 const PAGE_REGISTRY_VERSION = PAGE_METADATA.keyword_registry.registry_version;
+const ENTITY_IDENTITIES = PAGE_METADATA.entity_registry;
+if (!ENTITY_IDENTITIES?.person?.id || !ENTITY_IDENTITIES?.service_api?.id || !ENTITY_IDENTITIES?.service_software?.id) {
+  throw new Error("The canonical Entity Registry identities are missing from the MCP page metadata.");
+}
+const PERSON_NODE_JSON = JSON.stringify({
+  "@type": "Person",
+  "@id": ENTITY_IDENTITIES.person.id,
+  name: ENTITY_IDENTITIES.person.name,
+  url: ENTITY_IDENTITIES.person.url,
+  sameAs: ENTITY_IDENTITIES.person.same_as
+});
+const MCP_SOFTWARE_NODE_JSON = JSON.stringify({
+  "@type": "SoftwareApplication",
+  "@id": ENTITY_IDENTITIES.service_software.id,
+  name: ENTITY_IDENTITIES.service_software.name,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Any",
+  softwareVersion: SERVICE_VERSION,
+  url: ENTITY_IDENTITIES.service_software.url,
+  codeRepository: "https://github.com/dan-beranek/dio-odi-mcp",
+  sameAs: ["https://doi.org/10.5281/zenodo.24123229", "https://doi.org/10.5281/zenodo.24123228"],
+  provider: { "@id": ENTITY_IDENTITIES.person.id },
+  isPartOf: { "@id": "https://mcp.danielberanek.cz/#website" }
+});
+const MCP_API_NODE_JSON = JSON.stringify({
+  "@type": "WebAPI",
+  "@id": ENTITY_IDENTITIES.service_api.id,
+  name: ENTITY_IDENTITIES.service_api.name,
+  url: ENTITY_IDENTITIES.service_api.url,
+  documentation: "https://mcp.danielberanek.cz/#tools",
+  description: "A public, stateless, read-only Model Context Protocol interface to versioned DIO/ODI reference data and selected derived mappings. It does not inspect customer systems, instantiate domain policy, authorize mutations or execute production writes.",
+  provider: { "@id": ENTITY_IDENTITIES.person.id },
+  mainEntityOfPage: { "@id": "https://mcp.danielberanek.cz/#webpage" },
+  isPartOf: { "@id": "https://mcp.danielberanek.cz/#website" }
+});
 
 function escapeHtmlAttribute(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll(String.fromCharCode(34), "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -46,7 +81,10 @@ function renderHomePage(): string {
     .replace("__PAGE_KEYWORDS_HTML__", escapeHtmlAttribute(PAGE_KEYWORDS.join(", ")))
     .replace("__PAGE_PROFILE_ID__", escapeHtmlAttribute(PAGE_PROFILE_ID))
     .replace("__PAGE_REGISTRY_VERSION__", escapeHtmlAttribute(PAGE_REGISTRY_VERSION))
-    .replace("__PAGE_KEYWORDS_JSON__", JSON.stringify(PAGE_KEYWORDS));
+    .replace("__PAGE_KEYWORDS_JSON__", JSON.stringify(PAGE_KEYWORDS))
+    .replace("__PERSON_NODE_JSON__", PERSON_NODE_JSON)
+    .replace("__MCP_SOFTWARE_NODE_JSON__", MCP_SOFTWARE_NODE_JSON)
+    .replace("__MCP_API_NODE_JSON__", MCP_API_NODE_JSON);
 }
 
 const FAILURE_MODE_IDS = [
@@ -361,7 +399,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://mcp.danielberanek.cz/#website","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","inLanguage":"en","isPartOf":{"@id":"https://vocab.danielberanek.cz/#website"},"publisher":{"@id":"https://danielberanek.cz/#person"}},{"@type":"WebPage","@id":"https://mcp.danielberanek.cz/#webpage","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","description":"Public, stateless, read-only MCP interface to versioned DIO/ODI reference data and selected derived mappings.","inLanguage":"en","isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"},"about":{"@id":"https://vocab.danielberanek.cz/dio-odi/#ReferenceVocabulary"},"keywords":__PAGE_KEYWORDS_JSON__,"mainEntity":{"@id":"https://mcp.danielberanek.cz/#webapi"}},{"@type":"SoftwareApplication","@id":"https://mcp.danielberanek.cz/#software","name":"DIO/ODI MCP","applicationCategory":"DeveloperApplication","operatingSystem":"Any","softwareVersion":"__SERVICE_VERSION__","url":"https://mcp.danielberanek.cz/","codeRepository":"https://github.com/dan-beranek/dio-odi-mcp","sameAs":["https://doi.org/10.5281/zenodo.24123229","https://doi.org/10.5281/zenodo.24123228"],"provider":{"@id":"https://danielberanek.cz/#person"},"isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"}},{"@type":"Person","@id":"https://danielberanek.cz/#person","name":"Daniel Beránek","url":"https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/","sameAs":"https://orcid.org/0009-0004-0050-0264"},{"@type":"WebAPI","@id":"https://mcp.danielberanek.cz/#webapi","name":"DIO/ODI MCP","url":"https://mcp.danielberanek.cz/mcp","documentation":"https://mcp.danielberanek.cz/#tools","description":"A public, stateless, read-only Model Context Protocol interface to versioned DIO/ODI reference data and selected derived mappings. It does not inspect customer systems, instantiate domain policy, authorize mutations or execute production writes.","provider":{"@id":"https://danielberanek.cz/#person"},"mainEntityOfPage":{"@id":"https://mcp.danielberanek.cz/#webpage"},"isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"}}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://mcp.danielberanek.cz/#website","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","inLanguage":"en","isPartOf":{"@id":"https://vocab.danielberanek.cz/#website"},"publisher":{"@id":"https://danielberanek.cz/#person"}},{"@type":"WebPage","@id":"https://mcp.danielberanek.cz/#webpage","url":"https://mcp.danielberanek.cz/","name":"DIO/ODI MCP","description":"Public, stateless, read-only MCP interface to versioned DIO/ODI reference data and selected derived mappings.","inLanguage":"en","isPartOf":{"@id":"https://mcp.danielberanek.cz/#website"},"about":{"@id":"https://vocab.danielberanek.cz/dio-odi/#ReferenceVocabulary"},"keywords":__PAGE_KEYWORDS_JSON__,"mainEntity":{"@id":"https://mcp.danielberanek.cz/#webapi"}},__MCP_SOFTWARE_NODE_JSON__,__PERSON_NODE_JSON__,__MCP_API_NODE_JSON__]}
 </script>
 </head>
 <body>
