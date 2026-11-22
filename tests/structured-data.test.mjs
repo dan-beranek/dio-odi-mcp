@@ -4,12 +4,12 @@ import { readFile } from "node:fs/promises";
 
 test("MCP homepage JSON-LD links canonical Person, WebAPI and WebPage", async () => {
   const source = await readFile(new URL("../src/index.ts", import.meta.url), "utf8");
-  const jsonLdOpen = '<script type="application/ld+json">\\n';
+  const jsonLdOpen = '<script type="application/ld+json">';
   const start = source.indexOf(jsonLdOpen);
-  const end = source.indexOf("\\n</script>", start);
+  const openEnd = start < 0 ? -1 : source.indexOf(">", start) + 1;
+  const end = openEnd < 0 ? -1 : source.indexOf("</script>", openEnd);
   assert.ok(start >= 0 && end >= 0, "Expected embedded homepage JSON-LD");
-  const raw = source.slice(start + jsonLdOpen.length, end).replace("__PAGE_KEYWORDS_JSON__", "[]");
-  const parsed = JSON.parse(raw);
+  const raw = source.slice(openEnd, end).trim().replace("__PAGE_KEYWORDS_JSON__", "[]");
   const parsed = JSON.parse(raw);
   const graph = parsed["@graph"];
   assert.ok(Array.isArray(graph));
