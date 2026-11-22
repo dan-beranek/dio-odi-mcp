@@ -9,7 +9,7 @@ test("MCP homepage JSON-LD links canonical Person, WebAPI and WebPage", async ()
   const openEnd = start < 0 ? -1 : source.indexOf(">", start) + 1;
   const end = openEnd < 0 ? -1 : source.indexOf("</script>", openEnd);
   assert.ok(start >= 0 && end >= 0, "Expected embedded homepage JSON-LD");
-  const raw = source.slice(openEnd, end).trim().replace("__PAGE_KEYWORDS_JSON__", "[]");
+  const raw = source.slice(openEnd, end).trim().replace("__PAGE_KEYWORDS_JSON__", '["test keyword"]');
   const parsed = JSON.parse(raw);
   const graph = parsed["@graph"];
   assert.ok(Array.isArray(graph));
