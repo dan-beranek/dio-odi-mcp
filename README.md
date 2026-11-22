@@ -6,7 +6,7 @@ A public, read-only Model Context Protocol server for the DIO/ODI Reference Mode
 
 - MCP endpoint: `https://mcp.danielberanek.cz/mcp`
 - RFC 9727 API Catalog: `https://mcp.danielberanek.cz/.well-known/api-catalog`
-- Machine-readable MCP contract: `https://mcp.danielberanek.cz/schemas/mcp-contract.json` (MCP-specific; not OpenAPI)
+- Machine-readable MCP contract: `https://mcp.danielberanek.cz/schemas/mcp-contract-v0.1.1.json` (MCP-specific; not OpenAPI)
 - Human-readable service root: `https://mcp.danielberanek.cz/`
 - Health: `https://mcp.danielberanek.cz/healthz`
 - LLM-readable overview: `https://mcp.danielberanek.cz/llms.txt`
@@ -55,7 +55,7 @@ The service root is a single human-readable landing page. Its crawler and machin
 - `/sitemap.xml` lists the canonical homepage only; protocol and health endpoints are not indexable website pages.
 - `/llms.txt` provides a concise service overview, endpoint guidance, tool/resource inventory, version context, and architectural boundaries.
 - `/.well-known/api-catalog` serves an RFC 9727 Linkset catalog for the MCP endpoint, linking the machine-readable MCP contract, service documentation, Server Card, and health endpoint. The Linkset uses `application/linkset+json` with the RFC 9727 profile.
-- `/schemas/mcp-contract.json` serves the version-controlled machine-readable MCP interface contract; it describes MCP tools, resources, prompts, and protocol boundaries and is not an OpenAPI document.
+- `/schemas/mcp-contract-v0.1.1.json` serves the version-controlled machine-readable MCP interface contract; it describes MCP tools, resources, prompts, and protocol boundaries and is not an OpenAPI document.
 - `/mcp/server-card` serves a static Server Card describing the Streamable HTTP endpoint. It follows the experimental MCP Server Card profile (SEP-2127), which is not yet an accepted or official MCP extension.
 - The service homepage advertises two separate domain-level discovery manifests hosted by the canonical Reference Model:
   - ARD v0.91: https://vocab.danielberanek.cz/.well-known/ard.json
