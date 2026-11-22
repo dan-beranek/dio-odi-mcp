@@ -217,8 +217,8 @@ await check("RFC 9727 API Catalog describes the MCP endpoint and linked resource
   const response = await fetch(catalogUrl, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
   const contentType = response.headers.get("content-type") ?? "";
-  assert.match(contentType, /application\\/linkset\\+json/i);
-  assert.match(contentType, /profile="https:\\/\\/www\\.rfc-editor\\.org\\/info\\/rfc9727"/i);
+  assert.ok(contentType.includes("application/linkset+json"));
+  assert.ok(contentType.includes('profile="https://www.rfc-editor.org/info/rfc9727"'));
 
   const linkset = await response.json();
   assert.ok(Array.isArray(linkset.linkset));
@@ -232,12 +232,12 @@ await check("RFC 9727 API Catalog describes the MCP endpoint and linked resource
 
   const head = await fetch(catalogUrl, { method: "HEAD", signal: AbortSignal.timeout(15000) });
   assert.equal(head.status, 200);
-  assert.match(head.headers.get("content-type") ?? "", /application\\/linkset\\+json/i);
+  assert.ok((head.headers.get("content-type") ?? "").includes("application/linkset+json"));
   assert.match(head.headers.get("link") ?? "", /rel="?api-catalog"?/i);
 
   const contractResponse = await fetch(api["service-desc"][0].href, { signal: AbortSignal.timeout(15000) });
   assert.equal(contractResponse.status, 200);
-  assert.match(contractResponse.headers.get("content-type") ?? "", /application\\/json/i);
+  assert.ok((contractResponse.headers.get("content-type") ?? "").includes("application/json"));
   const contract = await contractResponse.json();
   assert.equal(contract.protocol?.name, "Model Context Protocol");
   assert.equal(contract.protocol?.endpoint, "/mcp");
@@ -245,7 +245,7 @@ await check("RFC 9727 API Catalog describes the MCP endpoint and linked resource
 
   const cardResponse = await fetch(api["service-meta"][0].href, { signal: AbortSignal.timeout(15000) });
   assert.equal(cardResponse.status, 200);
-  assert.match(cardResponse.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
+  assert.ok((cardResponse.headers.get("content-type") ?? "").includes("application/mcp-server-card+json"));
 });
 
 await check("sitemap.xml lists the canonical homepage only", async () => {
@@ -287,7 +287,7 @@ await check("public Server Card describes the matching Streamable HTTP service",
 
   const head = await fetch(urls.serverCard, { method: "HEAD", signal: AbortSignal.timeout(15000) });
   assert.equal(head.status, 200);
-  assert.match(head.headers.get("content-type") ?? "", /application\/mcp-server-card\+json/i);
+  assert.ok((head.headers.get("content-type") ?? "").includes("application/linkset+json"));
 });
 
 await check("health endpoint reports expected service and versions", async () => {
