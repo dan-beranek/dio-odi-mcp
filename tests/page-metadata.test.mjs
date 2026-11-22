@@ -15,6 +15,18 @@ test("MCP exposes one approved homepage profile from registry 2.11.0", () => {
   assert.equal(profile.page.entity_id, "https://mcp.danielberanek.cz/#webpage");
 });
 
+test("MCP shared identities resolve from the pinned Entity Registry", () => {
+  assert.equal(manifest.schema_version, "1.1.0");
+  assert.equal(manifest.entity_registry.version, "0.1.0");
+  assert.equal(manifest.entity_registry.commit, "857eb432da4c786a1de947db7750a5ed0c8ed80e");
+  assert.equal(manifest.entity_registry.person.id, "https://danielberanek.cz/#person");
+  assert.equal(manifest.entity_registry.person.url, "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/");
+  assert.deepEqual(manifest.entity_registry.person.same_as, ["https://orcid.org/0009-0004-0050-0264"]);
+  assert.equal(manifest.entity_registry.service_api.id, "https://mcp.danielberanek.cz/#webapi");
+  assert.equal(manifest.entity_registry.service_api.url, "https://mcp.danielberanek.cz/mcp");
+  assert.equal(manifest.entity_registry.service_software.id, "https://mcp.danielberanek.cz/#software");
+});
+
 test("resolved keywords preserve the complete C0 identity invariant and selected scope", () => {
   assert.deepEqual(profile.resolved_keywords.slice(0, 6), [
     "Digital Identity Optimization", "DIO", "Ontology of Digital Identity",
