@@ -1,6 +1,6 @@
 import packageJson from "../package.json";
 import { API_CATALOG, LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
-import MCP_CONTRACT from "../schemas/mcp-contract.json";
+import MCP_CONTRACT from "../schemas/mcp-contract-v0.1.1.json";
 import PAGE_METADATA from "./page-metadata.json";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
@@ -270,7 +270,7 @@ const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string; 
     contentType: 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
     headers: { Link: '<https://mcp.danielberanek.cz/.well-known/api-catalog>; rel="api-catalog"' }
   },
-  "/schemas/mcp-contract.json": {
+  "/schemas/mcp-contract-v0.1.1.json": {
     content: JSON.stringify(MCP_CONTRACT, null, 2) + "\n",
     contentType: "application/json; charset=utf-8"
   },
@@ -483,7 +483,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <tr><th>Research paper</th><td><a href="https://arxiv.org/abs/2610.37407v2">Constraining the Commit Boundary (v2)</a></td></tr>
 </tbody></table></div>
 <p>Reference Model archive metadata and the live Semantic Change Feed represent distinct versioned states. The service exposes the versions bundled in its snapshot; a later live-feed update does not retroactively modify the archived Reference Model.</p>
-<p>For complete tool schemas, development instructions, tests, deployment notes, and license boundaries, see the <a href="https://github.com/dan-beranek/dio-odi-mcp">source repository</a>, <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md">README</a>, and <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract.json">machine-readable contract</a>.</p>
+<p>For complete tool schemas, development instructions, tests, deployment notes, and license boundaries, see the <a href="https://github.com/dan-beranek/dio-odi-mcp">source repository</a>, <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md">README</a>, and <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract-v0.1.1.json">machine-readable contract</a>.</p>
 </section>
 </main>
 <footer class="site-footer">
