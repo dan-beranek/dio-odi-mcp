@@ -4,7 +4,7 @@ import { performance } from "node:perf_hooks";
 
 const DEFAULT_BASE_URL = "https://mcp.danielberanek.cz";
 const PROTOCOL_VERSION = "2026-07-28";
-const EXPECTED_SERVICE_VERSION = "0.1.2";
+const EXPECTED_SERVICE_VERSION = "0.1.3";
 const CLIENT_INFO = { name: "dio-odi-mcp-production-smoke", version: "1.0.0" };
 const CLIENT_META = {
   "io.modelcontextprotocol/protocolVersion": PROTOCOL_VERSION,
@@ -27,7 +27,8 @@ function resolveUrls(raw) {
     robots: `${base.origin}${rootPath}/robots.txt`,
     sitemap: `${base.origin}${rootPath}/sitemap.xml`,
     llms: `${base.origin}${rootPath}/llms.txt`,
-    mcp: `${base.origin}${mcpPath}`
+    mcp: `${base.origin}${mcpPath}`,
+    serverCard: `${base.origin}${rootPath}/mcp/server-card`
   };
 }
 
@@ -157,6 +158,8 @@ await check("service root is reachable", async () => {
   assert.match(html, /v0\.1\.4/);
   assert.match(html, /rel="sitemap"/);
   assert.match(html, /href="https:\/\/mcp\.danielberanek\.cz\/llms\.txt"/);
+  assert.ok(html.includes('rel="ard"') && html.includes("https://vocab.danielberanek.cz/.well-known/ard.json"));
+  assert.ok(html.includes('rel="ai-catalog"') && html.includes("https://vocab.danielberanek.cz/.well-known/ai-catalog.json"));
 });
 
 await check("homepage publishes the canonical registry-driven page profile", async () => {
@@ -201,6 +204,8 @@ await check("robots.txt publishes crawler rules and sitemap location", async () 
   assert.match(body, /^User-agent: \*$/m);
   assert.match(body, /^Allow: \/$/m);
   assert.match(body, /^Disallow: \/mcp$/m);
+  assert.match(body, /^Allow: \/mcp\/server-card$/m);
+  assert.match(body, /^Agentmap: https:\/\/vocab\.danielberanek\.cz\/\.well-known\/ard\.json$/m);
   assert.match(body, /^Disallow: \/healthz$/m);
   assert.match(body, /^Sitemap: https:\/\/mcp\.danielberanek\.cz\/sitemap\.xml$/m);
 });
@@ -229,6 +234,23 @@ await check("llms.txt describes the MCP endpoint and its architectural boundarie
   assert.match(body, /0\.1\.4/);
 });
 
+await check("public Server Card describes the matching Streamable HTTP service", async () => {
+  const response = await fetch(urls.serverCard, { signal: AbortSignal.timeout(15000) });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
+  const card = await response.json();
+  assert.equal(card.$schema, "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json");
+  assert.equal(card.name, "cz.danielberanek/dio-odi-mcp");
+  assert.equal(card.version, EXPECTED_SERVICE_VERSION);
+  assert.equal(card.remotes?.[0]?.type, "streamable-http");
+  assert.equal(card.remotes?.[0]?.url, urls.mcp);
+  assert.deepEqual(card.remotes?.[0]?.supportedProtocolVersions, ["2026-07-28", "2025-11-25"]);
+
+  const head = await fetch(urls.serverCard, { method: "HEAD", signal: AbortSignal.timeout(15000) });
+  assert.equal(head.status, 200);
+  assert.match(head.headers.get("content-type") ?? "", /application\\/mcp-server-card\\+json/i);
+});
+
 await check("health endpoint reports expected service and versions", async () => {
   const response = await fetch(urls.health, { signal: AbortSignal.timeout(15000) });
   assert.equal(response.status, 200);
@@ -247,7 +269,7 @@ await check("MCP server discovery advertises protocol and identity", async () =>
   assert.equal(response.status, 200);
   const result = resultOf(payload);
   assert.ok(result.supportedVersions.includes(PROTOCOL_VERSION));
-  assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, "dio-odi-mcp");
+  assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, "cz.danielberanek/dio-odi-mcp");
   assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].version, EXPECTED_SERVICE_VERSION);
 });
 
