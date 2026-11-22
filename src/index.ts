@@ -1,5 +1,6 @@
 import packageJson from "../package.json";
-import { LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
+import { API_CATALOG, LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
+import MCP_CONTRACT from "../schemas/mcp-contract.json";
 import PAGE_METADATA from "./page-metadata.json";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
@@ -264,6 +265,15 @@ function createServer() {
 const MACHINE_DOCUMENTS: Record<string, { content: string; contentType: string; headers?: Record<string, string> }> = {
   "/robots.txt": { content: ROBOTS_TXT, contentType: "text/plain; charset=utf-8" },
   "/sitemap.xml": { content: SITEMAP_XML, contentType: "application/xml; charset=utf-8" },
+  "/.well-known/api-catalog": {
+    content: API_CATALOG,
+    contentType: 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
+    headers: { Link: '<https://mcp.danielberanek.cz/.well-known/api-catalog>; rel="api-catalog"' }
+  },
+  "/schemas/mcp-contract-v0.1.1.json": {
+    content: JSON.stringify(MCP_CONTRACT, null, 2) + "\n",
+    contentType: "application/json; charset=utf-8"
+  },
   "/llms.txt": { content: LLMS_TXT, contentType: "text/plain; charset=utf-8" },
 };
 
@@ -284,6 +294,7 @@ const HOME_PAGE_HTML = `<!doctype html>
 <link rel="sitemap" type="application/xml" href="https://mcp.danielberanek.cz/sitemap.xml">
 <link rel="ard" type="application/json" href="https://vocab.danielberanek.cz/.well-known/ard.json">
 <link rel="ai-catalog" type="application/ai-catalog+json" href="https://vocab.danielberanek.cz/.well-known/ai-catalog.json">
+<link rel="api-catalog" type="application/linkset+json" href="https://mcp.danielberanek.cz/.well-known/api-catalog">
 <link rel="alternate" type="text/markdown" href="https://mcp.danielberanek.cz/llms.txt" title="LLM-readable service overview">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
@@ -472,12 +483,12 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <tr><th>Research paper</th><td><a href="https://arxiv.org/abs/2610.37407v2">Constraining the Commit Boundary (v2)</a></td></tr>
 </tbody></table></div>
 <p>Reference Model archive metadata and the live Semantic Change Feed represent distinct versioned states. The service exposes the versions bundled in its snapshot; a later live-feed update does not retroactively modify the archived Reference Model.</p>
-<p>For complete tool schemas, development instructions, tests, deployment notes, and license boundaries, see the <a href="https://github.com/dan-beranek/dio-odi-mcp">source repository</a>, <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md">README</a>, and <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract.json">machine-readable contract</a>.</p>
+<p>For complete tool schemas, development instructions, tests, deployment notes, and license boundaries, see the <a href="https://github.com/dan-beranek/dio-odi-mcp">source repository</a>, <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/README.md">README</a>, and <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/schemas/mcp-contract-v0.1.1.json">machine-readable contract</a>.</p>
 </section>
 </main>
 <footer class="site-footer">
 <p>Daniel Beránek · <a href="https://orcid.org/0009-0004-0050-0264">ORCID 0009-0004-0050-0264</a> · <a href="https://danielberanek.cz/manifest-dio/">DIO/ODI Hub</a></p>
-<p><a href="/llms.txt">LLM-readable overview</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">Crawler rules</a></p>
+<p><a href="/llms.txt">LLM-readable overview</a> · <a href="/.well-known/api-catalog">API Catalog</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">Crawler rules</a></p>
 <p><a href="https://github.com/dan-beranek/dio-odi-mcp">Source repository</a> · <a href="/healthz">Health status</a> · <a href="https://vocab.danielberanek.cz/">DIO/ODI Reference Model</a></p>
 <p>Software implementation: MIT · Embedded DIO/ODI reference content: CC BY 4.0</p>
 </footer>
@@ -527,9 +538,13 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    if (url.pathname === "/" && request.method === "GET") {
-      return new Response(renderHomePage(), {
-        headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=300" }
+    if (url.pathname === "/" && (request.method === "GET" || request.method === "HEAD")) {
+      return new Response(request.method === "HEAD" ? null : renderHomePage(), {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "public, max-age=300",
+          Link: '<https://mcp.danielberanek.cz/.well-known/api-catalog>; rel="api-catalog"'
+        }
       });
     }
 
@@ -613,7 +628,8 @@ export default {
         headers: {
           "Content-Type": machineDocument.contentType,
           "Cache-Control": "public, max-age=3600",
-          "X-Content-Type-Options": "nosniff"
+          "X-Content-Type-Options": "nosniff",
+          ...(machineDocument.headers ?? {})
         }
       });
     }
