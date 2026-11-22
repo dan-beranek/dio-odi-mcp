@@ -1,6 +1,6 @@
 import packageJson from "../package.json";
 import { API_CATALOG, LLMS_TXT, ROBOTS_TXT, SITEMAP_XML } from "./discovery.mjs";
-import MCP_CONTRACT from "../schemas/mcp-contract-v0.1.1.json";
+import MCP_CONTRACT from "../schemas/mcp-contract.json";
 import PAGE_METADATA from "./page-metadata.json";
 import { McpServer } from "@modelcontextprotocol/server";
 import { limitRequestBody } from "./body-limit.mjs";
