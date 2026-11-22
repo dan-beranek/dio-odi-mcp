@@ -555,7 +555,7 @@ export default {
         "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
         name: "cz.danielberanek/dio-odi-mcp",
         title: "DIO/ODI MCP Reference Service",
-        description: "Public, stateless, read-only MCP Streamable HTTP service exposing the DIO/ODI Reference Model, canonical SKOS vocabulary, and selected derived Agentic ER and Policy-as-Code reference mappings. It does not access integrating applications, validate evidence, authorize mutations, or execute production writes.",
+        description: "Read-only DIO/ODI MCP reference service for canonical vocabulary and Agentic ER mappings.",
         version: SERVICE_VERSION,
         websiteUrl: "https://mcp.danielberanek.cz/",
         repository: {

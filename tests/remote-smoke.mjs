@@ -4,7 +4,7 @@ import { performance } from "node:perf_hooks";
 
 const DEFAULT_BASE_URL = "https://mcp.danielberanek.cz";
 const PROTOCOL_VERSION = "2026-07-28";
-const EXPECTED_SERVICE_VERSION = "0.1.3";
+const EXPECTED_SERVICE_VERSION = "0.1.4";
 const CLIENT_INFO = { name: "dio-odi-mcp-production-smoke", version: "1.0.0" };
 const CLIENT_META = {
   "io.modelcontextprotocol/protocolVersion": PROTOCOL_VERSION,
@@ -242,6 +242,7 @@ await check("public Server Card describes the matching Streamable HTTP service",
   assert.equal(card.$schema, "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json");
   assert.equal(card.name, "cz.danielberanek/dio-odi-mcp");
   assert.equal(card.version, EXPECTED_SERVICE_VERSION);
+  assert.ok(card.description.length <= 100, "Server Card description must fit the schema maxLength.");
   assert.equal(card.remotes?.[0]?.type, "streamable-http");
   assert.equal(card.remotes?.[0]?.url, urls.mcp);
   assert.deepEqual(card.remotes?.[0]?.supportedProtocolVersions, ["2026-07-28", "2025-11-25"]);
