@@ -19,7 +19,7 @@ test("MCP homepage JSON-LD links canonical Person, WebAPI and WebPage", async ()
   const api = byId.get("https://mcp.danielberanek.cz/#webapi");
   const software = byId.get("https://mcp.danielberanek.cz/#software");
   assert.equal(person?.["@type"], "Person");
-  assert.equal(person?.mainEntityOfPage?.["@id"], "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/#profilepage");
+  assert.equal(person?.url, "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/");
   assert.equal(webpage?.mainEntity?.["@id"], api?.["@id"]);
   assert.equal(api?.["@type"], "WebAPI");
   assert.equal(api?.url, "https://mcp.danielberanek.cz/mcp");
