@@ -132,7 +132,7 @@ await check("legacy initialize handshake negotiates 2025-11-25", async () => {
   assert.equal(response.status, 200);
   const result = resultOf(payload);
   assert.equal(result.protocolVersion, LEGACY_PROTOCOL_VERSION);
-  assert.equal(result.serverInfo?.name, "dio-odi-mcp");
+  assert.equal(result.serverInfo?.name, "cz.danielberanek/dio-odi-mcp");
   assert.ok(result.capabilities?.tools);
   assert.ok(result.capabilities?.resources);
   assert.ok(result.capabilities?.prompts);
