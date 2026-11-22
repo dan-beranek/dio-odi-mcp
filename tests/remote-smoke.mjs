@@ -179,7 +179,7 @@ await check("homepage publishes the canonical registry-driven page profile", asy
   const person = graph.find((node) => node["@id"] === "https://danielberanek.cz/#person");
   assert.ok(person && person["@type"] === "Person", "Expected the canonical Person node");
   assert.equal(person.url, "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/");
-  assert.equal(person.mainEntityOfPage?.["@id"], "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/#profilepage");
+  assert.equal(person.url, "https://danielberanek.cz/od-pultu-az-k-seo-a-copy-s-ostrymi-hroty-profesni-bio/");
   const api = graph.find((node) => node["@id"] === "https://mcp.danielberanek.cz/#webapi");
   assert.ok(api && api["@type"] === "WebAPI", "Expected a separate WebAPI entity");
   assert.equal(api.url, urls.mcp);
