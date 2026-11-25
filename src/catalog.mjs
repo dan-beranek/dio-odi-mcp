@@ -13,10 +13,10 @@ export const REFERENCE_STATUS = {
     status: "canonical-reference"
   },
   semanticChangeFeed: {
-    liveVersion: "0.1.4",
+    liveVersion: "0.1.14",
     schemaVersion: "0.2.1",
-    events: 50,
-    coverageThrough: "2026-11-11",
+    events: 63,
+    coverageThrough: "2026-11-25",
     archiveSnapshot: {
       referenceModelVersion: "0.9.0",
       doi: "https://doi.org/10.5281/zenodo.24085589",
@@ -55,7 +55,7 @@ export const REFERENCE_STATUS = {
     date: "2026-10-09"
   },
   license: "https://creativecommons.org/licenses/by/4.0/",
-  checkedAt: "2026-11-12"
+  checkedAt: "2026-11-25"
 };
 
 const ns = "https://vocab.danielberanek.cz/dio-odi/#";
