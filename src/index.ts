@@ -515,7 +515,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 <tr><th>Software</th><td>DIO/ODI MCP v__SERVICE_VERSION__ · <a href="https://doi.org/10.5281/zenodo.24123229">version DOI</a> · <a href="https://doi.org/10.5281/zenodo.24123228">Concept DOI</a></td></tr>
 <tr><th>Reference Model archive</th><td>v0.9.0 · <a href="https://doi.org/10.5281/zenodo.24085589">10.5281/zenodo.24085589</a></td></tr>
 <tr><th>Reference Vocabulary</th><td>v0.2.2 · <a href="https://vocab.danielberanek.cz/dio-odi/">Canonical SKOS vocabulary</a></td></tr>
-<tr><th>Live Semantic Change Feed</th><td>v0.1.4 · schema v0.2.1 · 50 events through 11 November 2026 · <a href="https://vocab.danielberanek.cz/semantic-change-feed/events.json">Live feed</a></td></tr>
+<tr><th>Live Semantic Change Feed</th><td>v0.1.14 · schema v0.2.1 · 63 events through 25 November 2026 · <a href="https://vocab.danielberanek.cz/semantic-change-feed/events.json">Live feed</a></td></tr>
 <tr><th>Agentic ER mapping</th><td>v0.3.1 · <a href="https://vocab.danielberanek.cz/mappings/agentic-er-architecture/">Derived architecture mapping</a></td></tr>
 <tr><th>Policy-as-Code mapping</th><td>Derived, non-normative · <a href="https://vocab.danielberanek.cz/mappings/commit-boundary-policy/">Mapping for OPA/Rego and Cedar</a></td></tr>
 <tr><th>Research paper</th><td><a href="https://arxiv.org/abs/2610.37407v2">Constraining the Commit Boundary (v2)</a></td></tr>
