@@ -467,6 +467,7 @@ hr { border:0; border-top:1px solid var(--border); margin-block:2rem; }
 }</code></pre>
 <p>The tool returns the selected diagnostic domains and failure modes, illustrative diagnostic-to-constraint mappings, caller-supplied context and missing fields, reference-version provenance, and the requested evidence-promotion and commit-boundary material. It does not assess the supplied context or decide whether the mutation may proceed.</p>
 <p>For complete input and output field definitions, see the <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/docs/API-CONTRACT.md">API contract</a>. The <a href="https://github.com/dan-beranek/dio-odi-mcp/blob/main/examples/agentic-er-merge-flow.md">Agentic ER merge-flow example</a> describes the application-level sequence; it is conceptual documentation, not a captured MCP transcript or an implemented Supervisor.</p>
+  <p>A related design-time application is the <a href="https://apps.danielberanek.cz/agentic-entity-resolution-guardrail-planner/">Agentic Entity Resolution Guardrail Planner</a>. In its optional reference-backed mode, it can use this MCP for canonical concepts and mutation-specific reference profiles. The Planner prepares reviewable engineering plans; it does not execute customer mutations or authorize production writes.</p>
 </section>
 <section id="tools">
 <h2>Tool reference</h2>
