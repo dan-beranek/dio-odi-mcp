@@ -179,7 +179,7 @@ await check("service root is reachable", async () => {
   assert.match(html, /Live Semantic Change Feed/);
   assert.match(html, /v0\.1\.4/);
   const liveFeed = await fetchLiveScf();
-  const expectedScfStatus = `${liveFeed.feed_version} · schema ${liveFeed.schema_version} · ${liveFeed.event_count} events through ${formatScfDate(liveFeed.generated_on)}`;
+  const expectedScfStatus = `${liveFeed.feed_version} · schema v${liveFeed.schema_version} · ${liveFeed.event_count} events through ${formatScfDate(liveFeed.generated_on)}`;
   let statusHtml = html;
   for (let attempt = 0; attempt < 3 && !statusHtml.includes(expectedScfStatus); attempt += 1) {
     // A Worker deployment can propagate to different edge locations a moment apart.
@@ -316,7 +316,7 @@ await check("llms.txt describes the MCP endpoint and its architectural boundarie
   assert.match(body, /get_mutation_guardrail_profile/);
   assert.match(body, /not an authorization service/);
   const liveFeed = await fetchLiveScf();
-  const expectedScfStatus = `${liveFeed.feed_version}, schema ${liveFeed.schema_version}, ${liveFeed.event_count} events through ${liveFeed.generated_on}`;
+  const expectedScfStatus = `${liveFeed.feed_version}, schema v${liveFeed.schema_version}, ${liveFeed.event_count} events through ${liveFeed.generated_on}`;
   assert.ok(body.includes(expectedScfStatus), "llms.txt SCF status must match the canonical live feed.");
 });
 
