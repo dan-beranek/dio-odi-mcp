@@ -103,6 +103,28 @@ function toolData(result) {
   return JSON.parse(textItem.text);
 }
 
+async function fetchLiveScf() {
+  const response = await fetch("https://vocab.danielberanek.cz/semantic-change-feed/events.json", {
+    signal: AbortSignal.timeout(15000)
+  });
+  assert.equal(response.status, 200, "The canonical live Semantic Change Feed must be reachable.");
+  const feed = await response.json();
+  assert.equal(typeof feed.feed_version, "string");
+  assert.equal(typeof feed.schema_version, "string");
+  assert.equal(typeof feed.event_count, "number");
+  assert.equal(typeof feed.generated_on, "string");
+  return feed;
+}
+
+function formatScfDate(isoDate) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(new Date(`${isoDate}T00:00:00Z`));
+}
+
 async function check(name, fn) {
   const started = performance.now();
   try {
@@ -156,6 +178,9 @@ await check("service root is reachable", async () => {
   assert.match(html, /get_mutation_guardrail_profile/);
   assert.match(html, /Live Semantic Change Feed/);
   assert.match(html, /v0\.1\.4/);
+  const liveFeed = await fetchLiveScf();
+  const expectedScfStatus = `${liveFeed.feed_version} · schema ${liveFeed.schema_version} · ${liveFeed.event_count} events through ${formatScfDate(liveFeed.generated_on)}`;
+  assert.ok(html.includes(expectedScfStatus), "Homepage SCF status must match the canonical live feed.");
   assert.match(html, /rel="sitemap"/);
   assert.ok(html.includes('rel="api-catalog"') && html.includes("https://mcp.danielberanek.cz/.well-known/api-catalog"));
   assert.match(response.headers.get("link") ?? "", /rel="?api-catalog"?/i);
@@ -283,6 +308,9 @@ await check("llms.txt describes the MCP endpoint and its architectural boundarie
   assert.match(body, /get_mutation_guardrail_profile/);
   assert.match(body, /not an authorization service/);
   assert.match(body, /0\.1\.4/);
+  const liveFeed = await fetchLiveScf();
+  const expectedScfStatus = `${liveFeed.feed_version}, schema ${liveFeed.schema_version}, ${liveFeed.event_count} events through ${liveFeed.generated_on}`;
+  assert.ok(body.includes(expectedScfStatus), "llms.txt SCF status must match the canonical live feed.");
 });
 
 await check("public Server Card describes the matching Streamable HTTP service", async () => {
@@ -359,10 +387,15 @@ for (const uri of EXPECTED_RESOURCES) {
     assert.ok(contents[0].text.length > 0);
     const resourceData = JSON.parse(contents[0].text);
     if (uri === "dio-odi://reference/status") {
-      assert.equal(resourceData.semanticChangeFeed.liveVersion, "0.1.4");
-      assert.equal(resourceData.semanticChangeFeed.events, 50);
+      const liveFeed = await fetchLiveScf();
+      assert.equal(resourceData.semanticChangeFeed.liveVersion, liveFeed.feed_version);
+      assert.equal(resourceData.semanticChangeFeed.schemaVersion, liveFeed.schema_version);
+      assert.equal(resourceData.semanticChangeFeed.events, liveFeed.event_count);
+      assert.equal(resourceData.semanticChangeFeed.coverageThrough, liveFeed.generated_on);
+      assert.equal(resourceData.checkedAt, liveFeed.generated_on);
       assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
       assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.events, 45);
+      assert.equal(resourceData.semanticChangeFeed.archiveSnapshot.coverageThrough, "2026-11-09");
     }
   });
 }
@@ -430,19 +463,21 @@ const toolCases = [
     assert.ok(data.obligations.length > 0);
     assert.match(data.integrationBoundary, /policy inputs/);
   }],
-  ["get_reference_status", {}, (data) => {
+  ["get_reference_status", {}, async (data) => {
+    const liveFeed = await fetchLiveScf();
     assert.equal(data.referenceModel.archivedVersion, "0.9.0");
     assert.equal(data.referenceVocabulary.version, "0.2.2");
     assert.equal(data.applicationMappings.agenticEr.version, "0.3.1");
-    assert.equal(data.semanticChangeFeed.liveVersion, "0.1.4");
-    assert.equal(data.semanticChangeFeed.schemaVersion, "0.2.1");
-    assert.equal(data.semanticChangeFeed.events, 50);
-    assert.equal(data.semanticChangeFeed.coverageThrough, "2026-11-11");
+    assert.equal(data.semanticChangeFeed.liveVersion, liveFeed.feed_version);
+    assert.equal(data.semanticChangeFeed.schemaVersion, liveFeed.schema_version);
+    assert.equal(data.semanticChangeFeed.events, liveFeed.event_count);
+    assert.equal(data.semanticChangeFeed.coverageThrough, liveFeed.generated_on);
     assert.equal(data.semanticChangeFeed.archiveSnapshot.referenceModelVersion, "0.9.0");
     assert.equal(data.semanticChangeFeed.archiveSnapshot.feedVersion, "0.1.1");
     assert.equal(data.semanticChangeFeed.archiveSnapshot.schemaVersion, "0.2.0");
     assert.equal(data.semanticChangeFeed.archiveSnapshot.events, 45);
-    assert.equal(data.checkedAt, "2026-11-12");
+    assert.equal(data.semanticChangeFeed.archiveSnapshot.coverageThrough, "2026-11-09");
+    assert.equal(data.checkedAt, liveFeed.generated_on);
   }]
 ];
 
@@ -450,7 +485,7 @@ for (const [name, args, validate] of toolCases) {
   await check(`tools/call: ${name}`, async () => {
     assert.ok(discoveredTools.some((tool) => tool.name === name), `${name} was not advertised by tools/list`);
     const data = await callTool(name, args);
-    validate(data);
+    await validate(data);
   });
 }
 

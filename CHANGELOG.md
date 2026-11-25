@@ -2,10 +2,9 @@
 
 ## Unreleased
 
-- Synchronize the bundled live SCF status metadata to v0.1.4 / schema v0.2.1 / 50 events through 2026-11-11, while preserving the immutable v0.9.0 archive snapshot metadata.
-- Serve `robots.txt`, a homepage-only `sitemap.xml`, and an LLM-oriented `llms.txt` from the Worker.
-- Add remote smoke coverage for discovery documents and the live/archive SCF version boundary.
-- No MCP API, protocol, or software release version change.
+- Synchronize the bundled live SCF status metadata with the published feed: v0.1.14 / schema v0.2.1 / 63 events through 2026-11-25, while preserving the immutable v0.9.0 archive snapshot metadata.
+- Keep the published MCP service version unchanged; this is a live-reference metadata update, not a new software release.
+- Make remote smoke tests compare MCP live-feed metadata with the current public SCF registry, while checking the historical archive snapshot separately.
 
 ## 0.1.1 — 2026-11-11
 
